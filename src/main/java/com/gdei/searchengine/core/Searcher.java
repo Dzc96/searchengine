@@ -1,6 +1,7 @@
 package com.gdei.searchengine.core;
 
 import com.chenlb.mmseg4j.analysis.ComplexAnalyzer;
+import com.gdei.searchengine.domain.Result;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -14,12 +15,15 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.highlight.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.springframework.stereotype.Component;
 
 import java.io.StringReader;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
+@Component
 public class Searcher {
-    public static void search(String indexDir, String parameter) throws Exception {
+    public ArrayList<Result> search(String indexDir, String parameter) throws Exception {
         //把索引库加载到内存中，对应Directory对象
         Directory directory = FSDirectory.open(Paths.get(indexDir));
 
@@ -32,7 +36,7 @@ public class Searcher {
         //创建中文分词器,这里分别使用了SmartChineseAnalyzer、mmseg4j的ComplexAnalyzer
         //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
         Analyzer analyzer = new ComplexAnalyzer();
-        //ComplexAnalyzer
+
         //建立查询解析器
         QueryParser parser = new QueryParser("contents", analyzer);
         //根据传进来的参数构建Query对象
@@ -61,10 +65,14 @@ public class Searcher {
         /*高亮显示结束  */
 
         //ScoreDoc，描述文档相关度得分和对应文档id的对象
+        ArrayList<Result> results = new ArrayList<Result>();
         for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
             Document document = indexSearcher.doc(scoreDoc.doc);
-            System.out.println("【文档名字】：" + document.get("fileName"));
-            System.out.println("【文档路径】: " + document.get("fullPath"));
+            String fileName = document.get("fileName");
+            String fullPath = document.get("fullPath");
+
+            System.out.println("【文档名字】：" + fileName);
+            System.out.println("【文档路径】: " + fullPath);
 
             String contents = document.get("contents");
             if (contents != null) {
@@ -74,21 +82,32 @@ public class Searcher {
                 //获取最高的片段
                 System.out.print("【文档摘要内容】：" );
 //                System.out.println(highlighter.getBestFragment(tokenStream, contents));
-                System.out.println(highlighter.getBestFragment(analyzer, "contents", contents));
+//                String highlighterFragment = highlighter.getBestFragment(analyzer, "contents", contents);
+                String highlighterFragment = highlighter.getBestFragment(tokenStream, contents);
+                System.out.println(highlighterFragment);
                 System.out.println("------------------");
+
+                //这里写把Document对象变为Result对象返回的代码
+                Result result = new Result(fileName, highlighterFragment, fullPath);
+                results.add(result);
             }
         }
         indexReader.close();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("ArrayList中的对象数量:" + results.size());
+        System.out.println("------下面是在遍历ArrayList------------");
+        for (Result result : results) {
+            System.out.println("【文档名字】：" + result.getFileName());
+            System.out.println("【文档摘要】: " + result.getHighlighterFragment());
+            System.out.println("【文档路径】: " + result.getFullPath());
+            System.out.println("-----------结束-----------");
+        }
+        return results;
     }
-
-    public static void main(String[] args) throws Exception {
-        //指定索引库所在目录
-        String indexDir = "D:\\LuceneDemo\\index_demo_bysj";
-        //指定查询参数
-        String parameter = "java";
-        search(indexDir, parameter);
-    }
-
 
 
 

@@ -23,6 +23,7 @@ import org.apache.poi.xssf.extractor.XSSFExcelExtractor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -30,6 +31,7 @@ import java.nio.file.Paths;
 /**
  * demo_04主要是构建基于中文的索引库，同时支持对PDF、Word、Excel等文件进行解析创建索引，并对这些文件进行查询
  */
+@Component
 public class Indexer {
 
     public IndexWriter getWriter(Directory directory) throws Exception {

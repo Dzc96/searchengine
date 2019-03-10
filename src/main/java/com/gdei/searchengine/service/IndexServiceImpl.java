@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class IndexServiceImpl implements IndexService{
+
+    public static String indexDirectory = "D:\\index_directory";
+
     /**
      *   String dataDirectory = "D:\\LuceneDemo01";
      *         String indexDirectory = "D:\\LuceneDemo\\index_demo_bysj";
@@ -15,8 +18,7 @@ public class IndexServiceImpl implements IndexService{
      */
     public void createIndex(String dataDirectory) throws Exception{
         //默认在D盘下创建索引库
-        String indexDirectory = "D:\\index_directory";
         Indexer indexer = new Indexer();
-        indexer.index(dataDirectory, indexDirectory);
+        indexer.index(dataDirectory, IndexServiceImpl.indexDirectory);
     }
 }
