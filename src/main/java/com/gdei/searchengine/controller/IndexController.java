@@ -33,6 +33,12 @@ public class IndexController {
         return "search1";
     }
 
+    @GetMapping("/hy")
+    public String hy() {
+        return "huanying";
+    }
+
+
 
     /**
      * 处理前台的ajax请求，对传到后台的路径目录进行特定处理
