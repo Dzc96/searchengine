@@ -48,7 +48,7 @@ public class Indexer {
 
 
     /**
-     * 对Word文档创建索引
+     * 对各种类型的文档创建索引
      *
      * @throws Exception
      */
@@ -60,28 +60,17 @@ public class Indexer {
         File[] files = new File(dataDirectory).listFiles();
         for (int i = 0; i < files.length; i++) {
             if (files[i].isDirectory() && !files[i].isHidden()) {
-                System.out.println("进入" + files[i].getCanonicalPath() + "目录");
                 index(files[i].getCanonicalFile().toString(), indexDirectory);
             } else if (files[i].getName().indexOf(".") != -1 && !files[i].isHidden()) {
-
                 //根据索引库获得操作索引库的IndexWriter
                 IndexWriter indexWriter = getWriter(directory);
-
                 // 获取文件名称
                 String fileName = files[i].getName();
                 // 获取文件后缀名，将其作为文件类型
                 String fileType = fileName.substring(fileName.lastIndexOf(".") + 1,
                         fileName.length()).toLowerCase();
-                // 文件名称
-                System.out.println("文件名称：" + fileName);
-                // 文件类型
-                System.out.println("文件类型：" + fileType);
-                // 文件的完整路径
-                System.out.println("完整路径：" + files[i].toString());
-
                 Document doc = new Document();
                 InputStream in = new FileInputStream(files[i]);
-//                InputStreamReader reader = null;
                 number++;
                 //根据文件类型使用相应的代码创建索引
                 if (fileType != null && !fileType.equals("")) {
@@ -128,7 +117,6 @@ public class Indexer {
                         InputStream is = null;
                         HSSFWorkbook wb = null;
                         String text = "";
-
                         is = new FileInputStream(files[i].toString());
                         wb = new HSSFWorkbook(new POIFSFileSystem(is));
                         ExcelExtractor extractor = new ExcelExtractor(wb);
@@ -140,12 +128,10 @@ public class Indexer {
                         doc.add(new TextField("contents", text, Field.Store.YES));
                         doc.add(new TextField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
                         indexWriter.addDocument(doc);
-
                     } else if (fileType.equals("xlsx")) {
                         InputStream is = null;
                         XSSFWorkbook workBook = null;
                         String text = "";
-
                         is = new FileInputStream(files[i].toString());
                         workBook = new XSSFWorkbook(is);
                         XSSFExcelExtractor extractor = new XSSFExcelExtractor(workBook);
@@ -155,7 +141,6 @@ public class Indexer {
                         doc.add(new TextField("contents", text, Field.Store.YES));
                         doc.add(new TextField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
                         indexWriter.addDocument(doc);
-
                     } else if (fileType.equals("pptx")) {
                         InputStream is = null;
                         XMLSlideShow slide = null;
