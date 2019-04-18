@@ -7,11 +7,9 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -38,7 +36,23 @@ public class Searcher {
         Analyzer analyzer = new ComplexAnalyzer();
 
         //建立查询解析器
+//        String[] fields = {"fileName", "content"};
         QueryParser parser = new QueryParser("contents", analyzer);
+
+        //多域查询
+//        String[] queries = {parameter, parameter};
+//
+//        String[] fields = {"fileName", "content"};
+//
+//        BooleanClause.Occur[] clauses = { BooleanClause.Occur.SHOULD, BooleanClause.Occur.SHOULD };
+//
+//        Query query = MultiFieldQueryParser.parse(queries, fields, clauses, new ComplexAnalyzer());
+
+//        QueryParser parser = new MultiFieldQueryParser(fields, analyzer);
+
+
+
+
         //根据传进来的参数构建Query对象
         Query query = parser.parse(parameter);
 
@@ -71,8 +85,13 @@ public class Searcher {
             String fileName = document.get("fileName");
             String fullPath = document.get("fullPath");
 
+//            TokenStream fileNameTokenStream=analyzer.tokenStream("fileName", new StringReader(fileName));
+//            String bestFilename = highlighter.getBestFragment(fileNameTokenStream, fileName);
+
             System.out.println("【文档名字】：" + fileName);
             System.out.println("【文档路径】: " + fullPath);
+
+
 
             String primaryContents = document.get("contents");
             String contents = primaryContents.replace(" ", "");

@@ -56,34 +56,34 @@
                 <button type="button" class="btn btn-success" id="searchbutton" >进行检索</button>
             </div>
         </div>
+
+
+
+
+
     </form>
 
-    <!-- Results block 其实应该遍历生成一个一个的DIV-->
-    <div id="table_refresh" th:fragment="table_refresh">
-        <!--<table><table>-->
-            <!--<thead>-->
-            <!--<tr>-->
-                <!--<th>文档名字</th>-->
-                <!--<th>文档路径</th>-->
-                <!--<th>文档内容</th>-->
-            <!--</tr>-->
-            <!--</thead>-->
-            <!--<tbody>-->
-            <!--<tr  th:each="${Result : results}">-->
-                <!--<td th:text="${Result.fileName}">Onions</td>-->
-                <!--<td th:text="${Result.highlighterFragment}">Onions</td>-->
-                <!--<td th:text="${Result.fullPath}">Onions</td>-->
-            <!--</tr>-->
-        <!--</table>-->
 
-        <div th:if="${results} ne null">
-            <ul th:each="result : ${results}">
-                <li th:text="${result.fileName}"></li>
-                <li th:text="${result.fullPath}"></li>
-                <li th:text="${result.highlighterFragment}"></li>
-            </ul>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-8">
+            <!-- Results block 其实应该遍历生成一个一个的DIV-->
+            <div id="table_refresh" th:fragment="table_refresh">
+
+                <div th:if="${results} ne null">
+                    <div th:each="result : ${results}" style="margin-top: 30px">
+                        <div th:text="${result.fileName}" style="font-weight:bold; font-size: 16px"></div>
+                        <a><div th:text="${result.fullPath}" style="font-size: small"></div></a>
+                        <div th:utext="${result.highlighterFragment}"></div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
+        <div class="col-md-3"></div>
     </div>
+
 
 
 </div>
