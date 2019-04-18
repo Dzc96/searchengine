@@ -82,7 +82,7 @@ public class Searcher {
                 TokenStream tokenStream=analyzer.tokenStream("contents", new StringReader(contents));
                 //获取最高的片段
                 System.out.print("【文档摘要内容】：" );
-                String highlighterFragment = highlighter.getBestFragment(tokenStream, contents);
+                String highlighterFragment = highlighter.getBestFragment(tokenStream, contents) + "......";
                 System.out.println(highlighterFragment);
 
                 //这里写把Document对象变为Result对象返回的代码

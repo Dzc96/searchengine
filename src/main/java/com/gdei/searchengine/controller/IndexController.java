@@ -6,7 +6,9 @@ import com.gdei.searchengine.service.IndexService;
 import com.gdei.searchengine.service.IndexServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +26,7 @@ public class IndexController {
     Searcher searcher;
 
     @GetMapping("/searchEngine")
-    public String search1() {
+    public String search() {
         return "search";
     }
 
@@ -55,40 +57,28 @@ public class IndexController {
      * @return
      * @throws Exception
      */
-//    @RequestMapping(value = "/searchFor", method = RequestMethod.POST)
-//    @ResponseBody
-//    public Object createQuery(@RequestBody String parameter) throws Exception {
-//        //对传入参数做简单处理
-//        String target = parameter.replaceAll("\"","");
-//        ArrayList<Result> results = searcher.search(IndexServiceImpl.indexDirectory, target);
-//        Map<String,Object> map = new HashMap<>();
-//
-//        map.put("success",true);
-//        map.put("message","查询成功！");
-//        return map;
-//    }
-
-
-    @RequestMapping(value = "/searchFor", method = RequestMethod.POST)
-    public String createQuery(@RequestBody String parameter, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    //RequestMapping(value = "/searchFor", method = RequestMethod.POST)
+    @RequestMapping(value = "/searchFor")
+    public String createQuery(String parameter, Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         //对传入参数做简单处理
         String target = parameter.replaceAll("\"","");
         ArrayList<Result> results = searcher.search(IndexServiceImpl.indexDirectory, target);
-        request.setAttribute("results", results);
-        return "queryResult";
+        model.addAttribute("results", results);
+        return "search::table_refresh";
     }
 
-//    @RequestMapping("/queryResult")
-//    public String queryResult(Model model, @RequestParam("results") ArrayList results) {
-//        model.addAttribute("results", results);
-//        return "queryResult";
-//    }
+    @RequestMapping("/queryResult")
+    public String forwardTargetView(Model model, @RequestParam("results") ArrayList results) {
+        model.addAttribute("results", results);
+        return "hello";
+    }
 
 
-    @RequestMapping(value = "/searchFor111")
-    public String createQuery1() throws Exception {
-
-        return "queryResult";
+    @GetMapping("/search")
+    public String createQuery(Map<String, Object> paraMap) throws Exception {
+//        paraMap.put("name", "dzc");
+//        paraMap.put("age", 22);
+        return "search";
     }
 
 

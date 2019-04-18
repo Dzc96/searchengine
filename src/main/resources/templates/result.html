@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -28,62 +28,72 @@
         <div class="col-md-2"></div>
     </div>
 
-    <div class="row" style="margin-bottom: 30px;">
+    <div class="row" style="margin-top: 5px;">
         <div class="col-md-2"></div>
         <div class="col-md-8"></div>
         <div class="col-md-2"></div>
     </div>
-    <form class="form-horizontal" name="myform">
-        <div class="form-group">
-            <label for="indexDirectory" class="col-sm-2 control-label">索引目录</label>
-            <div class="col-sm-6">
-                <input id="indexDirectory" name="savePath" type="text" class="form-control"
-                       placeholder="请选择要创建索引的目录...">
-            </div>
-            <div class="col-sm-1">
-                <button type="button" class="btn btn-info" onclick="BrowseFolder()">选择目录</button>
-            </div>
-            <div class="col-sm-1">
-                <button id="indexbutton" type="button" class="btn btn-primary">创建索引</button>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="parameter" class="col-sm-2 control-label">检索内容</label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" id="parameter" placeholder="请输入要搜索的内容...">
-            </div>
-            <div class="col-sm-2">
-                <button type="button" class="btn btn-success" id="searchbutton" >进行检索</button>
-            </div>
-        </div>
-    </form>
 
-    <!-- Results block 其实应该遍历生成一个一个的DIV-->
-    <div id="table_refresh" th:fragment="table_refresh">
-        <!--<table><table>-->
-            <!--<thead>-->
-            <!--<tr>-->
-                <!--<th>文档名字</th>-->
-                <!--<th>文档路径</th>-->
-                <!--<th>文档内容</th>-->
-            <!--</tr>-->
-            <!--</thead>-->
-            <!--<tbody>-->
-            <!--<tr  th:each="${Result : results}">-->
-                <!--<td th:text="${Result.fileName}">Onions</td>-->
-                <!--<td th:text="${Result.highlighterFragment}">Onions</td>-->
-                <!--<td th:text="${Result.fullPath}">Onions</td>-->
-            <!--</tr>-->
-        <!--</table>-->
+    <!--<div class="input-group col-md-3" style="margin-top:0px;positon:relative">-->
+        <!--<input type="text" class="form-control" placeholder="请输入字段名"/>-->
+        <!--<span class="input-group-btn">-->
+               <!--<button class="btn btn-info btn-search">查找</button>-->
+               <!--<button class="btn btn-info btn-search" style="margin-left:3px">添加</button>-->
+            <!--</span>-->
+    <!--</div>-->
 
-        <div th:if="${results} ne null">
-            <ul th:each="result : ${results}">
-                <li th:text="${result.fileName}"></li>
-                <li th:text="${result.fullPath}"></li>
-                <li th:text="${result.highlighterFragment}"></li>
-            </ul>
+
+    <div class="form-group">
+        <label for="parameter" class="col-sm-2 control-label">检索内容</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="parameter" placeholder="请输入要搜索的内容...">
+        </div>
+        <div class="col-sm-2">
+            <button type="button" class="btn btn-success" id="searchbutton" >进行检索</button>
         </div>
     </div>
+
+    <div>
+        <table class="table table-bordered">
+            <!-- On rows -->
+            <tr class="active">...</tr>
+            <tr class="success">...</tr>
+            <tr class="warning">...</tr>
+            <tr class="danger">...</tr>
+            <tr class="info">...</tr>
+
+            <!-- On cells (`td` or `th`) -->
+            <tr>
+                <td class="active"><span th:text="${name}"></span></td>
+                <td class="success"><span th:text="${age}"></span> </td>
+                <td class="warning">...</td>
+                <td class="danger">...</td>
+                <td class="info">...</td>
+            </tr>
+            <tr>
+                <td class="active">...</td>
+                <td class="success">...</td>
+                <td class="warning">...</td>
+                <td class="danger">...</td>
+                <td class="info">...</td>
+            </tr>
+            <tr>
+                <td class="active">...</td>
+                <td class="success">...</td>
+                <td class="warning">...</td>
+                <td class="danger">...</td>
+                <td class="info">...</td>
+            </tr>
+            <tr>
+                <td class="active">...</td>
+                <td class="success">...</td>
+                <td class="warning">...</td>
+                <td class="danger">...</td>
+                <td class="info">...</td>
+            </tr>
+        </table>
+    </div>
+
 
 
 </div>
@@ -146,30 +156,24 @@
         });
 
 
-        // $("#searchbutton").click(function () {
-        //     var parameter = $('#parameter').val();
-        //
-        //     $.ajax({
-        //         url: "/searchFor",
-        //         data: JSON.stringify(parameter),
-        //         //type、contentType必填,指明传参方式
-        //         type: "POST",
-        //         contentType: "application/json;charset=utf-8",
-        //         success: function(response){
-        //             //前端调用成功后，可以处理后端传回的json格式数据。
-        //             if(response.success){
-        //                   alert(response.message);
-        //             }
-        //         }
-        //     });
-        // });
-
-        //这里应该把关键字拼接到URL上
         $("#searchbutton").click(function () {
-            var keyword = $("#parameter").val();
-            var url = '/searchFor?parameter=' + keyword;
-             $("#table_refresh").load(url);
-        })
+            var parameter = $('#parameter').val();
+
+            $.ajax({
+                url: "/searchFor",
+                data: JSON.stringify(parameter),
+                //type、contentType必填,指明传参方式
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                success: function(response){
+                    //前端调用成功后，可以处理后端传回的json格式数据。
+                    if(response.success){
+                          alert(response.message);
+                    }
+                }
+            });
+        });
+
 
 
     });

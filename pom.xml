@@ -120,6 +120,12 @@
             </exclusions>
         </dependency>
 
+        <!-- 集成thymeleaf模版引擎 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
