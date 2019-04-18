@@ -4,14 +4,9 @@ import com.gdei.searchengine.core.Searcher;
 import com.gdei.searchengine.domain.Result;
 import com.gdei.searchengine.service.IndexService;
 import com.gdei.searchengine.service.IndexServiceImpl;
-import org.apache.pdfbox.util.operator.MoveTextSetLeading;
-import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +25,7 @@ public class IndexController {
 
     @GetMapping("/searchEngine")
     public String search1() {
-        return "search1";
-    }
-
-    @GetMapping("/hy")
-    public String hy() {
-        return "huanying";
+        return "search";
     }
 
 

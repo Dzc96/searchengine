@@ -6,7 +6,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class IndexServiceImpl implements IndexService{
 
-    public static String indexDirectory = "D:\\index_directory";
+    //这里不应该写死，应该弹出一个框让人选择
+    public static String indexDirectory = "C:\\Users\\EDZ\\Desktop\\index_directory";
 
     /**
      *   String dataDirectory = "D:\\LuceneDemo01";
@@ -17,7 +18,6 @@ public class IndexServiceImpl implements IndexService{
      *         System.out.println("一共对" + number + "个文件创建了索引。");
      */
     public void createIndex(String dataDirectory) throws Exception{
-        //默认在D盘下创建索引库
         Indexer indexer = new Indexer();
         indexer.index(dataDirectory, IndexServiceImpl.indexDirectory);
     }

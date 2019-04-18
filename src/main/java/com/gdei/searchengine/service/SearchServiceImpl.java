@@ -17,7 +17,6 @@ public class SearchServiceImpl implements SearchService {
      * @throws Exception
      */
     public void search(String indexDir, String parameter) throws Exception{
-
         searcher.search(indexDir, parameter);
     }
 }

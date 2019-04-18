@@ -37,6 +37,7 @@ public class Indexer {
     public IndexWriter getWriter(Directory directory) throws Exception {
         //使用中文分词器
        //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
+        //mmseg4j
         Analyzer analyzer = new ComplexAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
         IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig);

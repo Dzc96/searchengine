@@ -1,6 +1,8 @@
 package com.gdei.searchengine.domain;
 
 
+
+
 public class Result {
     private String fileName;
     private String highlighterFragment;

@@ -1,42 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta name="keywords" content="keyword1,keyword2,keyword3">
-    <meta name="description" content="this is my page">
-    <meta name="content-type" content="text/html; charset=UTF-8">
-    <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
-    <script type="text/javascript">
-        $(function(){
-            $("#searchBtn").click(function(){
-                $.ajax({
-                    url:'/searchFood',
-                    data:'keyWord='+$("input[name='keyWord']").val(),
-                    success:function(jd){
-                        $("div[name='c']").remove();
-                        for(var i=0;i<jd.length;i++){
-                            var html=
-                                "<div name='c'>"+
-                                "<h3>"+jd[i].foodname+"</h3>"+
-                                "<span>"+jd[i].foodname+"价格是："+jd[i].price+"</span>"+
-                                "<ht>"+
-                                "</div>"
-                            $("#foodDiv").append(html);
-                        }
-                    }
-                })
-            })
-        })
-    </script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>本地搜索</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <![endif]-->
 </head>
 <body>
-<div align="center">
-    <img src="log.png" style="height:55px;width: 190px;"><br>
-    <table>
-        <input type="text" name="keyWord" style="width:450px; height:30px;">
-        <input type="button" id="searchBtn" value="搜索一下" style="height: 37px;background-color: #38f">
-    </table>
-    <div id="foodDiv" align="justify">
+
+<div class="container">
+    <!--<div class="row" style="height: 150px; border: 1px red solid;">-->
+    <div class="row">
+        <div class="col-md-2"><img src="/images/lucene.jpg"></div>
+        <div class="col-md-8" style="margin-top: 80px;"><h2 style="text-align: center">基于Lucene实现本地搜索引擎</h2></div>
+        <div class="col-md-2"></div>
     </div>
+
+    <div class="row" style="margin-bottom: 30px;">
+        <div class="col-md-2"></div>
+        <div class="col-md-8"></div>
+        <div class="col-md-2"></div>
+    </div>
+    <form class="form-horizontal" name="myform">
+        <div class="form-group">
+            <label for="indexDirectory" class="col-sm-2 control-label">索引目录</label>
+            <div class="col-sm-6">
+                <input id="indexDirectory" name="savePath" type="text" class="form-control"
+                       placeholder="请选择要创建索引的目录...">
+            </div>
+            <div class="col-sm-1">
+                <button type="button" class="btn btn-info" onclick="BrowseFolder()">选择目录</button>
+            </div>
+            <div class="col-sm-1">
+                <button id="indexbutton" type="button" class="btn btn-primary">创建索引</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="parameter" class="col-sm-2 control-label">检索内容</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="parameter" placeholder="请输入要搜索的内容...">
+            </div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-success" id="searchbutton" >进行检索</button>
+            </div>
+        </div>
+    </form>
 </div>
+
+
+<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script language="javascript">
+
+
+    function BrowseFolder() {
+        try {
+            var Message = "请选择文件夹";  //选择框提示信息
+            var Shell = new ActiveXObject("Shell.Application");
+            var Folder = Shell.BrowseForFolder(0, Message, 0x0040, 0x11);//起始目录为：我的电脑
+            //var Folder = Shell.BrowseForFolder(0,Message,0); //起始目录为：桌面
+            if (Folder != null) {
+                Folder = Folder.items();  // 返回 FolderItems 对象
+                Folder = Folder.item();  // 返回 Folderitem 对象
+                Folder = Folder.Path;   // 返回路径
+                if (Folder.charAt(Folder.length - 1) != "\\") {
+                    Folder = Folder + "\\";
+                }
+                document.all.savePath.value = Folder;
+                return Folder;
+            }
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+
+    $(document).ready(function () {
+
+        // $("#indexbutton").click(function(){
+        //     var dataDirectory = $('#indexDirectory').val();
+        //     // alert(dataDirectory);
+        //       $.post("/index", dataDirectory);
+        // });
+
+        $("#indexbutton").click(function () {
+            var dataDirectory = $('#indexDirectory').val();
+
+            $.ajax({
+                url: "/index",
+                data: JSON.stringify(dataDirectory),
+                //type、contentType必填,指明传参方式
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                success: function(response){
+                    //前端调用成功后，可以处理后端传回的json格式数据。
+                    if(response.success){
+                        alert(response.message);
+                    }
+                }
+            });
+        });
+
+
+        $("#searchbutton").click(function () {
+            var parameter = $('#parameter').val();
+
+            $.ajax({
+                url: "/searchFor",
+                data: JSON.stringify(parameter),
+                //type、contentType必填,指明传参方式
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                // success: function(response){
+                //     //前端调用成功后，可以处理后端传回的json格式数据。
+                //     if(response.success){
+                //           alert(response.message);
+                //     }
+                // }
+            });
+        });
+
+
+
+    });
+
+
+
+</script>
 </body>
+
+
 </html>

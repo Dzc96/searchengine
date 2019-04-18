@@ -74,7 +74,8 @@ public class Searcher {
             System.out.println("【文档名字】：" + fileName);
             System.out.println("【文档路径】: " + fullPath);
 
-            String contents = document.get("contents");
+            String primaryContents = document.get("contents");
+            String contents = primaryContents.replace(" ", "");
             if (contents != null) {
                 //把得分高的文档的摘要显示出来
                 //第一个参数是对哪个参数进行设置；第二个是以流的方式读入
