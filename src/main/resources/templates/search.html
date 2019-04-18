@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">；
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
     <title>本地搜索</title>
@@ -168,7 +169,7 @@
         $("#searchbutton").click(function () {
             var keyword = $("#parameter").val();
             var url = '/searchFor?parameter=' + keyword;
-             $("#table_refresh").load(url);
+             $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
         })
 
 
