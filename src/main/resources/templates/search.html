@@ -20,7 +20,42 @@
     <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
     <![endif]-->
 </head>
+<style type="text/css">
+
+    /*#searchbutton {*/
+       /*color:#3385FF;*/
+    /*}*/
+
+    /*.s_btn {*/
+        /*width: 100px;*/
+        /*height: 34px;*/
+        /*color: #fff;*/
+
+        /*letter-spacing: 1px;*/
+        /*background: #3385ff;*/
+        /*border-bottom: 1px solid #2d78f4;*/
+        /*outline: medium;*/
+        /**border-bottom: 0;*/
+        /*-webkit-appearance: none;*/
+        /*-webkit-border-radius: 0;*/
+    /*}*/
+
+    /*.scolor {*/
+        /*color:#3385FF;*/
+    /*}*/
+
+    /*!*.bg {*!*/
+        /*!*background-image: url(https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/global/img/icons_5859e57.png);*!*/
+        /*!*_background-image: url(https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/global/img/icons_d5b04cc.gif);*!*/
+        /*!*background-repeat: no-repeat;*!*/
+    /*!*}*!*/
+</style>
+
+
 <body>
+
+
+
 
 <div class="container">
     <!--<div class="row" style="height: 150px; border: 1px red solid;">-->
@@ -43,10 +78,10 @@
                        placeholder="请选择要创建索引的目录...">
             </div>
             <div class="col-sm-1">
-                <button type="button" class="btn btn-success" onclick="BrowseFolder()">选择目录</button>
+                <button type="button" class="btn btn-default" onclick="BrowseFolder()">选择目录</button>
             </div>
             <div class="col-sm-1">
-                <button id="indexbutton" type="button" class="btn btn-primary">创建索引</button>
+                <button id="indexbutton" type="button" class="btn btn-default">创建索引</button>
             </div>
         </div>
         <div class="form-group">
@@ -55,14 +90,14 @@
                 <input type="text" class="form-control" id="parameter" placeholder="请输入要搜索的内容...">
             </div>
             <div class="col-sm-2">
-                <button type="button" class="btn  btn-info" id="searchbutton">进行检索</button>
+                <button type="button" class="btn btn-info" id="searchbutton" style="background: #3385FF">进行检索</button>
             </div>
         </div>
 
 
     </form>
 
-
+    <!--font-weight:bold;-->
     <div class="row">
         <div class="col-md-1"></div>
         <div class="col-md-8">
@@ -71,17 +106,11 @@
 
                 <div th:if="${results} ne null">
                     <div th:each="result : ${results}" style="margin-top: 30px">
-                        <!--<a th:href="@{${result.fullPath}}" >&lt;!&ndash;考虑拼接一个file:// &ndash;&gt;-->
-                        <!--<a th:href="@{'http://www.baidu.com'}" target="_blank">-->
-                        <!--<a href="@{file:///C:\Users\EDZ\Desktop\搜索引擎测试目录\广东第二师范学院简介.txt}">-->
-                        <a th:href="@{${result.fullPath}}" ><!--考虑拼接一个file:// -->
-                            <div th:text="${result.fileName}" style="font-weight:bold; font-size: 16px"></div>
-                        </a>
-                        <a>
-                            <div th:text="${result.fullPath}" style="font-size: small"></div>
+                        <a th:href="@{${result.fullPath}}" class="btn-link" th:onclick="runExecutable([[${result.fullPath}]])">
+                            <div th:text="${result.fileName}" style="font-size: 16px;color: #0000CC"></div>
                         </a>
                         <div th:utext="${result.highlighterFragment}"></div>
-                        <input name="ccc" value="打开" type="button" th:onclick="runExecutable([[${result.fullPath}]])">
+                        <div th:text="${result.fullPath}" style="font-size: small;color: #008000" ></div>
                     </div>
 
                 </div>
@@ -137,7 +166,6 @@
 
     function runExecutable(fullPath)
     {
-       // var executableFullPath=document.getElementById("path").value;
         try {
             var shellActiveXObject = new ActiveXObject("WScript.Shell");
             if ( !shellActiveXObject )
@@ -155,14 +183,7 @@
     }
 
 
-
     $(document).ready(function () {
-
-        // $("#indexbutton").click(function(){
-        //     var dataDirectory = $('#indexDirectory').val();
-        //     // alert(dataDirectory);
-        //       $.post("/index", dataDirectory);
-        // });
 
         $("#indexbutton").click(function () {
             var dataDirectory = $('#indexDirectory').val();
@@ -182,24 +203,6 @@
             });
         });
 
-
-        // $("#searchbutton").click(function () {
-        //     var parameter = $('#parameter').val();
-        //
-        //     $.ajax({
-        //         url: "/searchFor",
-        //         data: JSON.stringify(parameter),
-        //         //type、contentType必填,指明传参方式
-        //         type: "POST",
-        //         contentType: "application/json;charset=utf-8",
-        //         success: function(response){
-        //             //前端调用成功后，可以处理后端传回的json格式数据。
-        //             if(response.success){
-        //                   alert(response.message);
-        //             }
-        //         }
-        //     });
-        // });
 
         //这里应该把关键字拼接到URL上
         $("#searchbutton").click(function () {
