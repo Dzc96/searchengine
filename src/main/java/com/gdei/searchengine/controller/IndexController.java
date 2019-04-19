@@ -101,26 +101,30 @@ public class IndexController {
      */
     @GetMapping("/pageSearch")
 //    public String pageQuery(@RequestParam("page")int page, @RequestParam("parameter")String parameter, Model model) throws Exception{
-    public String pageQuery(Integer page, String parameter, Integer totalPage, Model model) throws Exception{
+    public String pageQuery(Integer page, String parameter, Integer totalPage, Integer totalNumber, Model model) throws Exception{
 
         //传入第几页，就能计算出，后台要返回第i条-->第j条数据
         //封装好这些数据返回，局部刷新页面即可
 
         System.out.println("进入请求");
         System.out.println("当前page:" + page);
-        if (totalPage == null) {
+
+        if (totalPage == null) { //说明第一次查询
             ArrayList<Result> Allresults = searchService.search(IndexServiceImpl.indexDirectory, parameter);
             Integer pageNumber = Allresults.size() / (Searcher.pageSize);
             totalPage = Allresults.size() % (Searcher.pageSize) == 0 ? pageNumber : (pageNumber+1);
             page = 1;
             System.out.println("本次查询一共有" + Allresults.size() + "记录");
+            totalNumber =  Allresults.size();
         }
 
         String target = parameter.replaceAll("\"","");
         ArrayList<Result> results = searchService.pageSearch(IndexServiceImpl.indexDirectory, target, page);
 
+
         model.addAttribute("results", results);
         model.addAttribute("totalPage", totalPage);
+        model.addAttribute("totalNumber", totalNumber);
         //要返回总页数，放到model里面
         return "search::table_refresh";
     }

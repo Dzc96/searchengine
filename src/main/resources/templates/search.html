@@ -89,10 +89,15 @@
 
                 </div>
 
+
+
+
                 <div th:if="${totalPage} ne null">
+
+                    <a><b th:text="'共 '+ ${totalNumber}+ ' 条记录'"></b></a>
                     <a><b th:text="'共 '+ ${totalPage}+ ' 页'"></b></a>
                     <span th:each="i : ${#numbers.sequence(1, totalPage)}">
-                        <a href="#"  class="btn-link" th:onclick="nextPage([[${i}]], [[${totalPage}]])" th:text="${i}"></a>
+                        <a href="#"  class="btn-link" th:onclick="nextPage([[${i}]], [[${totalPage}]],[[${totalNumber}]])" th:text="${i}"></a>
                         <!--<span th:text="${i}"></span>-->
                     </span>
                 </div>
@@ -148,9 +153,9 @@
 
 
 
-    function nextPage(page, totalPage) {
+    function nextPage(page, totalPage,totalNumber) {
         var keyword = $("#parameter").val();
-        var url = '/pageSearch?page='+page+'&parameter=' + keyword+"&totalPage="+totalPage;
+        var url = '/pageSearch?page='+page+'&parameter=' + keyword+"&totalPage="+totalPage+"&totalNumber="+totalNumber;
         $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
 
     }
