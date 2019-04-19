@@ -80,8 +80,9 @@
 
                 <div th:if="${results} ne null">
                     <div th:each="result : ${results}" style="margin-top: 30px">
-                        <a th:href="@{${result.fullPath}}" class="btn-link" th:onclick="runExecutable([[${result.fullPath}]])">
-                            <div th:text="${result.fileName}" style="font-size: 16px;color: #0000CC"></div>
+                        <!--<a th:href="@{${result.fullPath}}" class="btn-link" th:onclick="runExecutable([[${result.fullPath}]])">-->
+                        <a th:href="@{'#'}" class="btn-link" th:onclick="runExecutable([[${result.fullPath}]])">
+                            <div th:utext="${result.fileName}" style="font-size: 16px;color: #0000CC"></div>
                         </a>
                         <div th:utext="${result.highlighterFragment}"></div>
                         <div th:text="${result.fullPath}" style="font-size: small;color: #008000" ></div>

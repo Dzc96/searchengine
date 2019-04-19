@@ -7,14 +7,16 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.xml.builders.BooleanQueryBuilder;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.stereotype.Component;
-
+import org.apache.lucene.search.BooleanQuery;
 import java.io.StringReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -188,6 +190,115 @@ public class Searcher {
         indexReader.close();
         return results;
     }
+
+
+
+    public ArrayList<Result> booleanSearch(String indexDir, String parameter, int page) throws Exception {
+        //把索引库加载到内存中，对应Directory对象
+        Directory directory = FSDirectory.open(Paths.get(indexDir));
+
+        //IndexReader对象来读取内存中的索引库，即Directory对象
+        IndexReader indexReader = DirectoryReader.open(directory);
+
+        //创建索引查询器
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+
+        //创建中文分词器,这里分别使用了SmartChineseAnalyzer、mmseg4j的ComplexAnalyzer
+        //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
+        Analyzer analyzer = new ComplexAnalyzer();
+
+        //建立查询解析器
+//        QueryParser parser = new QueryParser("contents", analyzer);
+
+
+        //根据传进来的参数构建Query对象
+//        BooleanQuery Bquery = new BooleanQuery();
+//        BooleanQuery query = new BooleanQuery();
+        String contentField = "contents";
+        String fileNameField = "fileName";
+        Query query1 = new TermQuery(new Term(contentField, parameter));
+        Query query2 = new TermQuery(new Term(fileNameField, parameter));
+        BooleanQuery.Builder builder = new BooleanQuery.Builder();
+        //两个Query的查询都为SHOULD，意味着求它们各自查询结果的并集，也就是说文件名和文件内容中出现了关键字的文档对象都可以查出来
+//        builder.add(query1, BooleanClause.Occur.SHOULD);
+//        builder.add(query2, BooleanClause.Occur.SHOULD);
+
+        builder.add(query1, BooleanClause.Occur.SHOULD);
+        builder.add(query2, BooleanClause.Occur.SHOULD);
+
+
+
+        BooleanQuery booleanQuery = builder.build();//先拿到Builder-->builder.build()-->BooleanQuery
+        TopDocs topDocs = indexSearcher.search(booleanQuery, 100);
+
+        Long totalNumber = topDocs.totalHits;
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("这里是布尔查询,一共匹配了" + totalNumber + "条数据" );
+
+
+        /*高亮显示开始   */
+        //算分
+        QueryScorer scorer = new QueryScorer(booleanQuery);
+        //显示得分高的片段
+        Fragmenter fragmenter = new SimpleSpanFragmenter(scorer);
+        //设置标签内部关键字的颜色
+        //第一个参数：标签的前半部分；第二个参数：标签的后半部分。
+        SimpleHTMLFormatter simpleHTMLFormatter=new SimpleHTMLFormatter("<b><font color='red'>","</font></b>");
+
+        //第一个参数是对查到的结果进行实例化；第二个是片段得分（显示得分高的片段，即摘要）
+        Highlighter highlighter=new Highlighter(simpleHTMLFormatter, scorer);
+
+        //设置片段
+        highlighter.setTextFragmenter(fragmenter);
+        /*高亮显示结束  */
+
+        //ScoreDoc，描述文档相关度得分和对应文档id的对象
+        int start = (page - 1) * pageSize;
+        int end = page * pageSize;
+        Integer endNumber = end;
+
+        if (end > totalNumber) {
+            endNumber = Math.toIntExact(totalNumber);
+        }
+
+        ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+        ArrayList<Result> results = new ArrayList<Result>();
+        for (int i = start; i < endNumber; i++) {
+            Result result = new Result();
+            Document document = indexSearcher.doc(scoreDocs[i].doc);
+            String fileName = document.get("fileName");
+            result.setFileName(fileName);
+
+            //对文件名进行关键字高亮
+            TokenStream tokenStream1=analyzer.tokenStream("fileName", new StringReader(fileName));
+            String highlighterFileName = highlighter.getBestFragment(tokenStream1, fileName);
+
+            if (highlighterFileName != null) {
+                 result.setFileName(highlighterFileName);
+            }
+
+            String fullPath = document.get("fullPath");
+            result.setFullPath(fullPath);
+
+            String primaryContents = document.get("contents");
+            String contents = primaryContents.replace(" ", "");
+            if (contents != null) {
+                TokenStream tokenStream2=analyzer.tokenStream("contents", new StringReader(contents));
+                String highlighterFragment = highlighter.getBestFragment(tokenStream2, contents) + "...";
+                result.setHighlighterFragment(highlighterFragment);
+                results.add(result);
+            }
+        }
+        indexReader.close();
+        return results;
+    }
+
 
 
 }

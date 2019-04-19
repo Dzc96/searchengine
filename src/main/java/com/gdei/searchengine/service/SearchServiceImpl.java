@@ -28,4 +28,10 @@ public class SearchServiceImpl implements SearchService {
         ArrayList<Result> results = searcher.pageSearch(indexDir, parameter, page);
         return results;
     }
+
+    @Override
+    public ArrayList<Result> booleanSearch(String indexDir, String parameter, int page) throws Exception {
+        ArrayList<Result> results = searcher.booleanSearch(indexDir, parameter, page);
+        return results;
+    }
 }

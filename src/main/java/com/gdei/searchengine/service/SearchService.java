@@ -9,4 +9,5 @@ public interface SearchService {
 
     public ArrayList<Result> pageSearch(String indexDir, String parameter, int page) throws Exception;
 
+    public ArrayList<Result> booleanSearch(String indexDir, String parameter, int page) throws Exception;
 }
