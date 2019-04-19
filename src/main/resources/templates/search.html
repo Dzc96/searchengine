@@ -91,8 +91,8 @@
 
                 <div th:if="${totalPage} ne null">
                     <a><b th:text="'共 '+ ${totalPage}+ ' 页'"></b></a>
-                    <span th:each="i : ${#numbers.sequence(0, totalPage)}">
-                        <a href="#"  class="btn-link" th:onclick="nextPage([[${i}]])" th:text="${i}"></a>
+                    <span th:each="i : ${#numbers.sequence(1, totalPage)}">
+                        <a href="#"  class="btn-link" th:onclick="nextPage([[${i}]], [[${totalPage}]])" th:text="${i}"></a>
                         <!--<span th:text="${i}"></span>-->
                     </span>
                 </div>
@@ -107,9 +107,9 @@
 
 
 
-    <a href="#" class="btn-link" >1</a>
-    <a href="file:///C:/a.txt" class="btn-link">2</a>
-    <a href="file:///C:/a.txt" class="btn-link">3</a>
+    <!--<a href="#" class="btn-link" >1</a>-->
+    <!--<a href="file:///C:/a.txt" class="btn-link">2</a>-->
+    <!--<a href="file:///C:/a.txt" class="btn-link">3</a>-->
 
 
 
@@ -146,21 +146,11 @@
         }
     }
 
-    // function nextPage() {
-    //     var keyword = $("#parameter").val();
-    //     alert(keyword)
-    //     var url = '/pageSearch?page='+1+'&parameter=' + keyword;
-    //     $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
-    // }
 
-    function nextPage(page) {
+
+    function nextPage(page, totalPage) {
         var keyword = $("#parameter").val();
-        // var page = $("").html();
-        // alert(keyword)
-        alert(page)
-        alert("hahh")
-        var url = '/pageSearch?page='+page+'&parameter=' + keyword;
-        //  var url = '/pageInfoSearch?page='+1+'&parameter=' + keyword;
+        var url = '/pageSearch?page='+page+'&parameter=' + keyword+"&totalPage="+totalPage;
         $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
 
     }
@@ -210,19 +200,10 @@
         $("#searchbutton").click(function () {
             var keyword = $("#parameter").val();
             // var url = '/pageInfoSearch?parameter=' + keyword;
-            var url = '/searchFor?parameter=' + keyword;
+            var url = '/pageSearch?parameter=' + keyword;
             $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
         })
 
-        // $("a").click(function () {
-        //     var keyword = $("#parameter").val();
-        //     var page = $(this).text();
-        //     // alert(keyword)
-        //      alert(page)
-        //     var url = '/pageSearch?page='+page+'&parameter=' + keyword;
-        //     //  var url = '/pageInfoSearch?page='+1+'&parameter=' + keyword;
-        //     $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
-        // })
 
 
 

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 @Component
 public class Searcher {
 
-    public static int pageSize = 2;
+    public static int pageSize = 5;
 
     public ArrayList<Result> search(String indexDir, String parameter) throws Exception {
         //把索引库加载到内存中，对应Directory对象
@@ -48,7 +48,7 @@ public class Searcher {
 
         long start = System.currentTimeMillis();
         //默认查询十条
-        TopDocs topDocs = indexSearcher.search(query, 10);
+        TopDocs topDocs = indexSearcher.search(query, 100);
         //命中的Document总数
         Long totalNumber = topDocs.totalHits;
 
@@ -142,7 +142,7 @@ public class Searcher {
         //topDocs就是查询到的记录
         TopDocs topDocs = indexSearcher.search(query, page * pageSize);
         //命中的Document总数
-//        Long totalNumber = topDocs.totalHits;
+        Long totalNumber = topDocs.totalHits;
 
         /*高亮显示开始   */
         //算分
@@ -163,9 +163,15 @@ public class Searcher {
         //ScoreDoc，描述文档相关度得分和对应文档id的对象
         int start = (page - 1) * pageSize;
         int end = page * pageSize;
+        Integer endNumber = end;
+
+        if (end > totalNumber) {
+            endNumber = Math.toIntExact(totalNumber);
+        }
+
         ScoreDoc[] scoreDocs = topDocs.scoreDocs;
         ArrayList<Result> results = new ArrayList<Result>();
-        for (int i = start; i < end; i++) {
+        for (int i = start; i < endNumber; i++) {
             Document document = indexSearcher.doc(scoreDocs[i].doc);
             String fileName = document.get("fileName");
             String fullPath = document.get("fullPath");
