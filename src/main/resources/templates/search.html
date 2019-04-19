@@ -81,7 +81,7 @@
                             <div th:text="${result.fullPath}" style="font-size: small"></div>
                         </a>
                         <div th:utext="${result.highlighterFragment}"></div>
-                        <input name="ccc" value="打开" type="button" th:onclick="open_disk([[${result.fullPath}]])">
+                        <input name="ccc" value="打开" type="button" th:onclick="runExecutable([[${result.fullPath}]])">
                     </div>
 
                 </div>
@@ -128,14 +128,31 @@
         try {
             alert("haha")
             alert(fullPath)
-           window.open('file:///' + fullPath)
+           window.open(fullPath)
             }
          catch (e) {
             alert(e.message);
         }
     }
 
-
+    function runExecutable(fullPath)
+    {
+       // var executableFullPath=document.getElementById("path").value;
+        try {
+            var shellActiveXObject = new ActiveXObject("WScript.Shell");
+            if ( !shellActiveXObject )
+            {
+                alert('Could not get reference to WScript.Shell');
+                return;
+            }
+            shellActiveXObject.Run(fullPath, 1, false);
+            shellActiveXObject = null;
+        }
+        catch (errorObject)
+        {
+            alert('Error:\n' + errorObject.message);
+        }
+    }
 
 
 
