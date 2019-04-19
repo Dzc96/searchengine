@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="content-type" content="text/html;charset=utf-8">；
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    ；
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
     <title>本地搜索</title>
@@ -29,7 +30,7 @@
         <div class="col-md-2"></div>
     </div>
 
-    <div class="row" style="margin-bottom: 30px;">
+    <div class="row" style="margin-bottom: 5px;">
         <div class="col-md-2"></div>
         <div class="col-md-8"></div>
         <div class="col-md-2"></div>
@@ -42,7 +43,7 @@
                        placeholder="请选择要创建索引的目录...">
             </div>
             <div class="col-sm-1">
-                <button type="button" class="btn btn-info" onclick="BrowseFolder()">选择目录</button>
+                <button type="button" class="btn btn-success" onclick="BrowseFolder()">选择目录</button>
             </div>
             <div class="col-sm-1">
                 <button id="indexbutton" type="button" class="btn btn-primary">创建索引</button>
@@ -54,12 +55,9 @@
                 <input type="text" class="form-control" id="parameter" placeholder="请输入要搜索的内容...">
             </div>
             <div class="col-sm-2">
-                <button type="button" class="btn btn-success" id="searchbutton" >进行检索</button>
+                <button type="button" class="btn  btn-info" id="searchbutton">进行检索</button>
             </div>
         </div>
-
-
-
 
 
     </form>
@@ -73,9 +71,17 @@
 
                 <div th:if="${results} ne null">
                     <div th:each="result : ${results}" style="margin-top: 30px">
-                        <div th:text="${result.fileName}" style="font-weight:bold; font-size: 16px"></div>
-                        <a><div th:text="${result.fullPath}" style="font-size: small"></div></a>
+                        <!--<a th:href="@{${result.fullPath}}" >&lt;!&ndash;考虑拼接一个file:// &ndash;&gt;-->
+                        <!--<a th:href="@{'http://www.baidu.com'}" target="_blank">-->
+                        <!--<a href="@{file:///C:\Users\EDZ\Desktop\搜索引擎测试目录\广东第二师范学院简介.txt}">-->
+                        <a th:href="@{${result.fullPath}}" ><!--考虑拼接一个file:// -->
+                            <div th:text="${result.fileName}" style="font-weight:bold; font-size: 16px"></div>
+                        </a>
+                        <a>
+                            <div th:text="${result.fullPath}" style="font-size: small"></div>
+                        </a>
                         <div th:utext="${result.highlighterFragment}"></div>
+                        <input name="ccc" value="打开" type="button" th:onclick="open_disk([[${result.fullPath}]])">
                     </div>
 
                 </div>
@@ -84,7 +90,6 @@
         </div>
         <div class="col-md-3"></div>
     </div>
-
 
 
 </div>
@@ -119,6 +124,20 @@
         }
     }
 
+    function open_disk(fullPath) {
+        try {
+            alert("haha")
+            alert(fullPath)
+           window.open('file:///' + fullPath)
+            }
+         catch (e) {
+            alert(e.message);
+        }
+    }
+
+
+
+
 
     $(document).ready(function () {
 
@@ -137,9 +156,9 @@
                 //type、contentType必填,指明传参方式
                 type: "POST",
                 contentType: "application/json;charset=utf-8",
-                success: function(response){
+                success: function (response) {
                     //前端调用成功后，可以处理后端传回的json格式数据。
-                    if(response.success){
+                    if (response.success) {
                         alert(response.message);
                     }
                 }
@@ -169,12 +188,11 @@
         $("#searchbutton").click(function () {
             var keyword = $("#parameter").val();
             var url = '/searchFor?parameter=' + keyword;
-             $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
+            $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
         })
 
 
     });
-
 
 
 </script>

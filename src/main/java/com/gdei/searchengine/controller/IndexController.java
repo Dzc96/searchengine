@@ -67,11 +67,11 @@ public class IndexController {
         return "search::table_refresh";
     }
 
-    @RequestMapping("/queryResult")
-    public String forwardTargetView(Model model, @RequestParam("results") ArrayList results) {
-        model.addAttribute("results", results);
-        return "hello";
-    }
+//    @RequestMapping("/queryResult")
+//    public String forwardTargetView(Model model, @RequestParam("results") ArrayList results) {
+//        model.addAttribute("results", results);
+//        return "hello";
+//    }
 
 
     @GetMapping("/search")
