@@ -126,6 +126,23 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+        <!-- 引入nekohtml使得程序能解析HTML文档并用标准的XML接口来访问其中的信息，否则在使用thymeleaf时可能会报一写语法上的错误。-->
+        <dependency>
+            <groupId>net.sourceforge.nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+        </dependency>
+
+
+        <!--分页-->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.1.2</version>
+            <type>pom</type>
+        </dependency>
+
+
+
     </dependencies>
 
     <build>

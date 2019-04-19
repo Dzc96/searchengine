@@ -21,6 +21,9 @@ import java.util.ArrayList;
 
 @Component
 public class Searcher {
+
+    public static int pageSize = 2;
+
     public ArrayList<Result> search(String indexDir, String parameter) throws Exception {
         //把索引库加载到内存中，对应Directory对象
         Directory directory = FSDirectory.open(Paths.get(indexDir));
@@ -36,20 +39,7 @@ public class Searcher {
         Analyzer analyzer = new ComplexAnalyzer();
 
         //建立查询解析器
-//        String[] fields = {"fileName", "content"};
         QueryParser parser = new QueryParser("contents", analyzer);
-
-        //多域查询
-//        String[] queries = {parameter, parameter};
-//
-//        String[] fields = {"fileName", "content"};
-//
-//        BooleanClause.Occur[] clauses = { BooleanClause.Occur.SHOULD, BooleanClause.Occur.SHOULD };
-//
-//        Query query = MultiFieldQueryParser.parse(queries, fields, clauses, new ComplexAnalyzer());
-
-//        QueryParser parser = new MultiFieldQueryParser(fields, analyzer);
-
 
 
 
@@ -57,7 +47,11 @@ public class Searcher {
         Query query = parser.parse(parameter);
 
         long start = System.currentTimeMillis();
+        //默认查询十条
         TopDocs topDocs = indexSearcher.search(query, 10);
+        //命中的Document总数
+        Long totalNumber = topDocs.totalHits;
+
         long end = System.currentTimeMillis();
         System.out.println("匹配 ["+parameter+ "],总共花费了"+(end-start)+"毫秒,共查到"+topDocs.totalHits+"条记录。");
 
@@ -84,10 +78,6 @@ public class Searcher {
             Document document = indexSearcher.doc(scoreDoc.doc);
             String fileName = document.get("fileName");
             String fullPath = document.get("fullPath");
-
-//            TokenStream fileNameTokenStream=analyzer.tokenStream("fileName", new StringReader(fileName));
-//            String bestFilename = highlighter.getBestFragment(fileNameTokenStream, fileName);
-
             System.out.println("【文档名字】：" + fileName);
             System.out.println("【文档路径】: " + fullPath);
 
@@ -126,6 +116,72 @@ public class Searcher {
         return results;
     }
 
+
+    public ArrayList<Result> pageSearch(String indexDir, String parameter, int page) throws Exception {
+        //把索引库加载到内存中，对应Directory对象
+        Directory directory = FSDirectory.open(Paths.get(indexDir));
+
+        //IndexReader对象来读取内存中的索引库，即Directory对象
+        IndexReader indexReader = DirectoryReader.open(directory);
+
+        //创建索引查询器
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+
+        //创建中文分词器,这里分别使用了SmartChineseAnalyzer、mmseg4j的ComplexAnalyzer
+        //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
+        Analyzer analyzer = new ComplexAnalyzer();
+
+        //建立查询解析器
+        QueryParser parser = new QueryParser("contents", analyzer);
+
+
+
+        //根据传进来的参数构建Query对象
+        Query query = parser.parse(parameter);
+
+        //topDocs就是查询到的记录
+        TopDocs topDocs = indexSearcher.search(query, page * pageSize);
+        //命中的Document总数
+//        Long totalNumber = topDocs.totalHits;
+
+        /*高亮显示开始   */
+        //算分
+        QueryScorer scorer = new QueryScorer(query);
+        //显示得分高的片段
+        Fragmenter fragmenter = new SimpleSpanFragmenter(scorer);
+        //设置标签内部关键字的颜色
+        //第一个参数：标签的前半部分；第二个参数：标签的后半部分。
+        SimpleHTMLFormatter simpleHTMLFormatter=new SimpleHTMLFormatter("<b><font color='red'>","</font></b>");
+
+        //第一个参数是对查到的结果进行实例化；第二个是片段得分（显示得分高的片段，即摘要）
+        Highlighter highlighter=new Highlighter(simpleHTMLFormatter, scorer);
+
+        //设置片段
+        highlighter.setTextFragmenter(fragmenter);
+        /*高亮显示结束  */
+
+        //ScoreDoc，描述文档相关度得分和对应文档id的对象
+        int start = (page - 1) * pageSize;
+        int end = page * pageSize;
+        ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+        ArrayList<Result> results = new ArrayList<Result>();
+        for (int i = start; i < end; i++) {
+            Document document = indexSearcher.doc(scoreDocs[i].doc);
+            String fileName = document.get("fileName");
+            String fullPath = document.get("fullPath");
+
+            String primaryContents = document.get("contents");
+            String contents = primaryContents.replace(" ", "");
+            if (contents != null) {
+                TokenStream tokenStream=analyzer.tokenStream("contents", new StringReader(contents));
+                String highlighterFragment = highlighter.getBestFragment(tokenStream, contents) + "...";
+                Result result = new Result(fileName, highlighterFragment, fullPath);
+                results.add(result);
+            }
+        }
+        indexReader.close();
+        return results;
+    }
 
 
 }

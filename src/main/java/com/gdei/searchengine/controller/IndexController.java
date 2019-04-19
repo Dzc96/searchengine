@@ -4,6 +4,9 @@ import com.gdei.searchengine.core.Searcher;
 import com.gdei.searchengine.domain.Result;
 import com.gdei.searchengine.service.IndexService;
 import com.gdei.searchengine.service.IndexServiceImpl;
+import com.gdei.searchengine.service.SearchService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +26,12 @@ public class IndexController {
     IndexService indexService;
 
     @Autowired
+    SearchService searchService;
+
+    @Autowired
     Searcher searcher;
+
+
 
     @GetMapping("/searchEngine")
     public String search() {
@@ -59,28 +67,82 @@ public class IndexController {
      */
     //RequestMapping(value = "/searchFor", method = RequestMethod.POST)
     @RequestMapping(value = "/searchFor")
-    public String createQuery(String parameter, Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public String createQuery(String parameter, Model model) throws Exception {
         //对传入参数做简单处理
         String target = parameter.replaceAll("\"","");
-        ArrayList<Result> results = searcher.search(IndexServiceImpl.indexDirectory, target);
+//        ArrayList<Result> results = searcher.search(IndexServiceImpl.indexDirectory, target);
+        ArrayList<Result> results = searchService.search(IndexServiceImpl.indexDirectory, target);
         model.addAttribute("results", results);
+        Integer totalPage = results.size() / (Searcher.pageSize);
+        model.addAttribute("totalPage", totalPage);
         return "search::table_refresh";
     }
 
-//    @RequestMapping("/queryResult")
-//    public String forwardTargetView(Model model, @RequestParam("results") ArrayList results) {
-//        model.addAttribute("results", results);
-//        return "hello";
-//    }
 
 
     @GetMapping("/search")
-    public String createQuery(Map<String, Object> paraMap) throws Exception {
-//        paraMap.put("name", "dzc");
-//        paraMap.put("age", 22);
+    public String createQuery() throws Exception {
         return "search";
     }
 
+
+    /**
+     * 分页查询
+     * @param page
+     * @return
+     */
+    @GetMapping("/pageSearch")
+//    public String pageQuery(@RequestParam("page")int page, @RequestParam("parameter")String parameter, Model model) throws Exception{
+    public String pageQuery(Integer page, String parameter, Model model) throws Exception{
+
+        //传入第几页，就能计算出，后台要返回第i条-->第j条数据
+        //封装好这些数据返回，局部刷新页面即可
+        System.out.println("进入请求");
+        System.out.println("当前page:" + page);
+        String target = parameter.replaceAll("\"","");
+        ArrayList<Result> results = searchService.pageSearch(IndexServiceImpl.indexDirectory, target, page);
+        model.addAttribute("results", results);
+        Integer totalPage = results.size() / (Searcher.pageSize);
+        model.addAttribute("totalPage", totalPage);
+        //要返回总页数，放到model里面
+        return "search::table_refresh";
+    }
+
+
+    @GetMapping("/pageInfoSearch")
+//    public String pageQuery(@RequestParam("page")int page, @RequestParam("parameter")String parameter, Model model) throws Exception{
+    public String pageInfoSearch(Integer currentPage, String parameter, Model model) throws Exception{
+
+        //传入第几页，就能计算出，后台要返回第i条-->第j条数据
+        //封装好这些数据返回，局部刷新页面即可
+        System.out.println("进入请求");
+        String target = parameter.replaceAll("\"","");
+        ArrayList<Result> results = searchService.search(IndexServiceImpl.indexDirectory, target);
+
+        PageHelper.startPage(currentPage,2);
+        PageInfo<Result> pageInfo = new PageInfo<>(results);
+        model.addAttribute("results", results);
+
+        Integer startPage = 0;
+        Integer endPage = 0;
+        model.addAttribute("pageNum",pageInfo.getPageNum());
+        model.addAttribute("pageSize",pageInfo.getPageSize());
+        model.addAttribute("size",pageInfo.getSize());
+        model.addAttribute("startRow",pageInfo.getStartRow());
+        model.addAttribute("endRow",pageInfo.getEndRow());
+        model.addAttribute("total",pageInfo.getTotal());
+        model.addAttribute("pages",pageInfo.getPages());
+        model.addAttribute("prePage",pageInfo.getPrePage());
+        model.addAttribute("nextPage",pageInfo.getNextPage());
+        model.addAttribute("isFirstPage",pageInfo.isIsFirstPage());
+        model.addAttribute("isLastPage",pageInfo.isIsLastPage());
+        model.addAttribute("hasPreviousPage",pageInfo.isHasPreviousPage());
+        model.addAttribute("hasNextPage",pageInfo.isHasNextPage());
+        model.addAttribute("startPage",startPage);
+        model.addAttribute("endPage",endPage);
+        model.addAttribute("fenye", 1);
+        return "search::table_refresh";
+    }
 
 
 

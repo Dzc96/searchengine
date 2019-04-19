@@ -22,33 +22,7 @@
 </head>
 <style type="text/css">
 
-    /*#searchbutton {*/
-       /*color:#3385FF;*/
-    /*}*/
 
-    /*.s_btn {*/
-        /*width: 100px;*/
-        /*height: 34px;*/
-        /*color: #fff;*/
-
-        /*letter-spacing: 1px;*/
-        /*background: #3385ff;*/
-        /*border-bottom: 1px solid #2d78f4;*/
-        /*outline: medium;*/
-        /**border-bottom: 0;*/
-        /*-webkit-appearance: none;*/
-        /*-webkit-border-radius: 0;*/
-    /*}*/
-
-    /*.scolor {*/
-        /*color:#3385FF;*/
-    /*}*/
-
-    /*!*.bg {*!*/
-        /*!*background-image: url(https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/global/img/icons_5859e57.png);*!*/
-        /*!*_background-image: url(https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/global/img/icons_d5b04cc.gif);*!*/
-        /*!*background-repeat: no-repeat;*!*/
-    /*!*}*!*/
 </style>
 
 
@@ -114,11 +88,30 @@
                     </div>
 
                 </div>
+
+                <div th:if="${totalPage} ne null">
+                    <a><b th:text="'共 '+ ${totalPage}+ ' 页'"></b></a>
+                    <span th:each="i : ${#numbers.sequence(0, totalPage)}">
+                        <a href="#"  class="btn-link" th:onclick="nextPage([[${i}]])" th:text="${i}"></a>
+                        <!--<span th:text="${i}"></span>-->
+                    </span>
+                </div>
+
+
             </div>
 
         </div>
         <div class="col-md-3"></div>
     </div>
+
+
+
+
+    <a href="#" class="btn-link" >1</a>
+    <a href="file:///C:/a.txt" class="btn-link">2</a>
+    <a href="file:///C:/a.txt" class="btn-link">3</a>
+
+
 
 
 </div>
@@ -153,16 +146,25 @@
         }
     }
 
-    function open_disk(fullPath) {
-        try {
-            alert("haha")
-            alert(fullPath)
-           window.open(fullPath)
-            }
-         catch (e) {
-            alert(e.message);
-        }
+    // function nextPage() {
+    //     var keyword = $("#parameter").val();
+    //     alert(keyword)
+    //     var url = '/pageSearch?page='+1+'&parameter=' + keyword;
+    //     $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
+    // }
+
+    function nextPage(page) {
+        var keyword = $("#parameter").val();
+        // var page = $("").html();
+        // alert(keyword)
+        alert(page)
+        alert("hahh")
+        var url = '/pageSearch?page='+page+'&parameter=' + keyword;
+        //  var url = '/pageInfoSearch?page='+1+'&parameter=' + keyword;
+        $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
+
     }
+
 
     function runExecutable(fullPath)
     {
@@ -207,9 +209,22 @@
         //这里应该把关键字拼接到URL上
         $("#searchbutton").click(function () {
             var keyword = $("#parameter").val();
+            // var url = '/pageInfoSearch?parameter=' + keyword;
             var url = '/searchFor?parameter=' + keyword;
             $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
         })
+
+        // $("a").click(function () {
+        //     var keyword = $("#parameter").val();
+        //     var page = $(this).text();
+        //     // alert(keyword)
+        //      alert(page)
+        //     var url = '/pageSearch?page='+page+'&parameter=' + keyword;
+        //     //  var url = '/pageInfoSearch?page='+1+'&parameter=' + keyword;
+        //     $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
+        // })
+
+
 
 
     });
