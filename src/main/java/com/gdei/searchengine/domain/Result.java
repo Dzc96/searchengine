@@ -1,9 +1,9 @@
 package com.gdei.searchengine.domain;
 
 
+import java.io.Serializable;
 
-
-public class Result {
+public class Result implements Serializable {
     private String fileName;
     private String highlighterFragment;
     private String fullPath;

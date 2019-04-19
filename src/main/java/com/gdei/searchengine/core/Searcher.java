@@ -24,6 +24,7 @@ import java.util.ArrayList;
 @Component
 public class Searcher {
 
+    //每页的记录数量
     public static int pageSize = 5;
 
     public ArrayList<Result> search(String indexDir, String parameter) throws Exception {
@@ -146,7 +147,7 @@ public class Searcher {
         //命中的Document总数
         Long totalNumber = topDocs.totalHits;
 
-        /*高亮显示开始   */
+        /*高亮显示开始*/
         //算分
         QueryScorer scorer = new QueryScorer(query);
         //显示得分高的片段
@@ -160,7 +161,7 @@ public class Searcher {
 
         //设置片段
         highlighter.setTextFragmenter(fragmenter);
-        /*高亮显示结束  */
+        /*高亮显示结束*/
 
         //ScoreDoc，描述文档相关度得分和对应文档id的对象
         int start = (page - 1) * pageSize;
@@ -207,26 +208,15 @@ public class Searcher {
         //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
         Analyzer analyzer = new ComplexAnalyzer();
 
-        //建立查询解析器
-//        QueryParser parser = new QueryParser("contents", analyzer);
-
-
         //根据传进来的参数构建Query对象
-//        BooleanQuery Bquery = new BooleanQuery();
-//        BooleanQuery query = new BooleanQuery();
         String contentField = "contents";
         String fileNameField = "fileName";
         Query query1 = new TermQuery(new Term(contentField, parameter));
         Query query2 = new TermQuery(new Term(fileNameField, parameter));
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
         //两个Query的查询都为SHOULD，意味着求它们各自查询结果的并集，也就是说文件名和文件内容中出现了关键字的文档对象都可以查出来
-//        builder.add(query1, BooleanClause.Occur.SHOULD);
-//        builder.add(query2, BooleanClause.Occur.SHOULD);
-
         builder.add(query1, BooleanClause.Occur.SHOULD);
         builder.add(query2, BooleanClause.Occur.SHOULD);
-
-
 
         BooleanQuery booleanQuery = builder.build();//先拿到Builder-->builder.build()-->BooleanQuery
         TopDocs topDocs = indexSearcher.search(booleanQuery, 100);
@@ -242,7 +232,7 @@ public class Searcher {
         System.out.println("这里是布尔查询,一共匹配了" + totalNumber + "条数据" );
 
 
-        /*高亮显示开始   */
+        /*高亮显示开始*/
         //算分
         QueryScorer scorer = new QueryScorer(booleanQuery);
         //显示得分高的片段
@@ -256,7 +246,7 @@ public class Searcher {
 
         //设置片段
         highlighter.setTextFragmenter(fragmenter);
-        /*高亮显示结束  */
+        /*高亮显示结束*/
 
         //ScoreDoc，描述文档相关度得分和对应文档id的对象
         int start = (page - 1) * pageSize;

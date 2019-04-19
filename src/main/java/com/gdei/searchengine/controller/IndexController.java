@@ -7,6 +7,9 @@ import com.gdei.searchengine.service.IndexServiceImpl;
 import com.gdei.searchengine.service.SearchService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.search.suggest.analyzing.AnalyzingInfixSuggester;
+import org.apache.lucene.store.RAMDirectory;
 import org.apache.xmlbeans.impl.xb.xsdschema.All;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -116,7 +119,48 @@ public class IndexController {
     }
 
 
+    @GetMapping("/testSuggest")
+    public void lookup() throws  Exception{
+        RAMDirectory indexDir = new RAMDirectory();
+        StandardAnalyzer analyzer = new StandardAnalyzer();
+        AnalyzingInfixSuggester suggester = new AnalyzingInfixSuggester(indexDir, analyzer);
+//        searchService.testSuggest(suggester);
+//        suggester.build
+    }
 
-
+//    @Test
+//    public void mainTest(){
+//        try {
+//            RAMDirectory indexDir = new RAMDirectory();
+//            StandardAnalyzer analyzer = new StandardAnalyzer();
+//            AnalyzingInfixSuggester suggester = new AnalyzingInfixSuggester(indexDir, analyzer);
+//
+//            //创建Product测试数据
+//            ArrayList<Product> products = new ArrayList<Product>();
+//            products.add(new Product("Electric Guitar",
+//                    "http://images.example/electric-guitar.jpg", new String[] {
+//                    "US", "CA" }, 100));
+//            products.add(new Product("Electric Train",
+//                    "http://images.example/train.jpg", new String[] { "US",
+//                    "CA" }, 100));
+//            products.add(new Product("Acoustic Guitar",
+//                    "http://images.example/acoustic-guitar.jpg", new String[] {
+//                    "US", "ZA" }, 80));
+//            products.add(new Product("Guarana Soda",
+//                    "http://images.example/soda.jpg",
+//                    new String[] { "ZA", "IE" }, 130));
+//
+//            // 创建测试索引
+//            suggester.build(new ProductIterator(products.iterator()));
+//
+//            // 开始搜索
+//            lookup(suggester, "Gu", "US");
+//            //lookup(suggester, "Gu", "ZA");
+//            //lookup(suggester, "Gui", "CA");
+//            //lookup(suggester, "Electric guit", "US");
+//        } catch (IOException e) {
+//            System.err.println("Error!");
+//        }
+//    }
 
 }
