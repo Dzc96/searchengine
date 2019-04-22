@@ -36,7 +36,6 @@ public class IndexController {
     Searcher searcher;
 
 
-
     @GetMapping("/search")
     public String createQuery() throws Exception {
         return "search";

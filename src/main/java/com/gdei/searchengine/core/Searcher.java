@@ -20,6 +20,7 @@ import org.apache.lucene.search.BooleanQuery;
 import java.io.StringReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Vector;
 
 @Component
 public class Searcher {
@@ -27,6 +28,7 @@ public class Searcher {
     //每页的记录数量
     public static int pageSize = 5;
 
+    @SuppressWarnings("Duplicates")
     public ArrayList<Result> search(String indexDir, String parameter) throws Exception {
         //把索引库加载到内存中，对应Directory对象
         Directory directory = FSDirectory.open(Paths.get(indexDir));
@@ -41,7 +43,7 @@ public class Searcher {
         //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
         Analyzer analyzer = new ComplexAnalyzer();
 
-        //建立查询解析器
+        //建立查询解析器，先分词再查询
         QueryParser parser = new QueryParser("contents", analyzer);
 
 
@@ -119,7 +121,7 @@ public class Searcher {
         return results;
     }
 
-
+    @SuppressWarnings("Duplicates")
     public ArrayList<Result> pageSearch(String indexDir, String parameter, int page) throws Exception {
         //把索引库加载到内存中，对应Directory对象
         Directory directory = FSDirectory.open(Paths.get(indexDir));
@@ -134,7 +136,7 @@ public class Searcher {
         //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
         Analyzer analyzer = new ComplexAnalyzer();
 
-        //建立查询解析器
+       //建立查询解析器，先分词再查询,默认先根据Document的contents域查询
         QueryParser parser = new QueryParser("contents", analyzer);
 
 
@@ -193,7 +195,8 @@ public class Searcher {
     }
 
 
-
+    //通过布尔查询实现多域查询，即通过传入的查询参数，对文件名fileName域、文件内容contents域进行
+    @SuppressWarnings("Duplicates")
     public ArrayList<Result> booleanSearch(String indexDir, String parameter, int page) throws Exception {
         //把索引库加载到内存中，对应Directory对象
         Directory directory = FSDirectory.open(Paths.get(indexDir));
@@ -208,28 +211,28 @@ public class Searcher {
         //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
         Analyzer analyzer = new ComplexAnalyzer();
 
-        //根据传进来的参数构建Query对象
-        String contentField = "contents";
-        String fileNameField = "fileName";
-        Query query1 = new TermQuery(new Term(contentField, parameter));
-        Query query2 = new TermQuery(new Term(fileNameField, parameter));
+        //指定要查询的域
+        String[] fields  = {"contents", "fileName"};
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
+
+        //在contents和fileName域上都进行同一个关键词的查找，查询时先对关键词进行分词
         //两个Query的查询都为SHOULD，意味着求它们各自查询结果的并集，也就是说文件名和文件内容中出现了关键字的文档对象都可以查出来
-        builder.add(query1, BooleanClause.Occur.SHOULD);
-        builder.add(query2, BooleanClause.Occur.SHOULD);
+        for (int i = 0; i < fields.length; i++) {
+            QueryParser queryParser = new QueryParser(fields[i], analyzer);
+            Query query = queryParser.parse(parameter);
+            builder.add(query,BooleanClause.Occur.SHOULD);
+        }
+
 
         BooleanQuery booleanQuery = builder.build();//先拿到Builder-->builder.build()-->BooleanQuery
         TopDocs topDocs = indexSearcher.search(booleanQuery, 100);
-
         Long totalNumber = topDocs.totalHits;
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println("这里是布尔查询,一共匹配了" + totalNumber + "条数据" );
+
+
+//        System.out.println();
+//        System.out.println();
+//        System.out.println();
+//        System.out.println("这里是布尔查询,一共匹配了" + totalNumber + "条数据" );
 
 
         /*高亮显示开始*/
