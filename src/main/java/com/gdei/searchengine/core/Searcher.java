@@ -7,10 +7,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.xml.builders.BooleanQueryBuilder;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.*;
 import org.apache.lucene.store.Directory;
@@ -20,16 +17,17 @@ import org.apache.lucene.search.BooleanQuery;
 import java.io.StringReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
+
 
 @Component
 public class Searcher {
 
     //每页的记录数量
-    public static int pageSize = 5;
+    public static final int PAGE_SIZE = 5;
 
     @SuppressWarnings("Duplicates")
-    public ArrayList<Result> search(String indexDir, String parameter) throws Exception {
+    public List<Result> search(String indexDir, String parameter) throws Exception {
         //把索引库加载到内存中，对应Directory对象
         Directory directory = FSDirectory.open(Paths.get(indexDir));
 
@@ -55,10 +53,10 @@ public class Searcher {
         //默认查询十条
         TopDocs topDocs = indexSearcher.search(query, 100);
         //命中的Document总数
-        Long totalNumber = topDocs.totalHits;
+        long totalNumber = topDocs.totalHits;
 
         long end = System.currentTimeMillis();
-        System.out.println("匹配 ["+parameter+ "],总共花费了"+(end-start)+"毫秒,共查到"+topDocs.totalHits+"条记录。");
+        System.out.println("匹配 ["+parameter+ "],总共花费了"+(end-start)+"毫秒,共查到"+totalNumber+"条记录。");
 
 
         /*高亮显示开始   */
@@ -90,7 +88,7 @@ public class Searcher {
 
             String primaryContents = document.get("contents");
             String contents = primaryContents.replace(" ", "");
-            if (contents != null) {
+            if (!contents.isEmpty()) {
                 //把得分高的文档的摘要显示出来
                 //第一个参数是对哪个参数进行设置；第二个是以流的方式读入
                 TokenStream tokenStream=analyzer.tokenStream("contents", new StringReader(contents));
@@ -122,7 +120,7 @@ public class Searcher {
     }
 
     @SuppressWarnings("Duplicates")
-    public ArrayList<Result> pageSearch(String indexDir, String parameter, int page) throws Exception {
+    public List<Result> pageSearch(String indexDir, String parameter, int page) throws Exception {
         //把索引库加载到内存中，对应Directory对象
         Directory directory = FSDirectory.open(Paths.get(indexDir));
 
@@ -145,9 +143,9 @@ public class Searcher {
         Query query = parser.parse(parameter);
 
         //topDocs就是查询到的记录
-        TopDocs topDocs = indexSearcher.search(query, page * pageSize);
+        TopDocs topDocs = indexSearcher.search(query, page * PAGE_SIZE);
         //命中的Document总数
-        Long totalNumber = topDocs.totalHits;
+        long totalNumber = topDocs.totalHits;
 
         /*高亮显示开始*/
         //算分
@@ -166,8 +164,8 @@ public class Searcher {
         /*高亮显示结束*/
 
         //ScoreDoc，描述文档相关度得分和对应文档id的对象
-        int start = (page - 1) * pageSize;
-        int end = page * pageSize;
+        int start = (page - 1) * PAGE_SIZE;
+        int end = page * PAGE_SIZE;
         Integer endNumber = end;
 
         if (end > totalNumber) {
@@ -183,7 +181,7 @@ public class Searcher {
 
             String primaryContents = document.get("contents");
             String contents = primaryContents.replace(" ", "");
-            if (contents != null) {
+            if (!contents.isEmpty()) {
                 TokenStream tokenStream=analyzer.tokenStream("contents", new StringReader(contents));
                 String highlighterFragment = highlighter.getBestFragment(tokenStream, contents) + "...";
                 Result result = new Result(fileName, highlighterFragment, fullPath);
@@ -197,7 +195,7 @@ public class Searcher {
 
     //通过布尔查询实现多域查询，即通过传入的查询参数，对文件名fileName域、文件内容contents域进行
     @SuppressWarnings("Duplicates")
-    public ArrayList<Result> booleanSearch(String indexDir, String parameter, int page) throws Exception {
+    public List<Result> booleanSearch(String indexDir, String parameter, int page) throws Exception {
         //把索引库加载到内存中，对应Directory对象
         Directory directory = FSDirectory.open(Paths.get(indexDir));
 
@@ -229,11 +227,6 @@ public class Searcher {
         Long totalNumber = topDocs.totalHits;
 
 
-//        System.out.println();
-//        System.out.println();
-//        System.out.println();
-//        System.out.println("这里是布尔查询,一共匹配了" + totalNumber + "条数据" );
-
 
         /*高亮显示开始*/
         //算分
@@ -252,9 +245,9 @@ public class Searcher {
         /*高亮显示结束*/
 
         //ScoreDoc，描述文档相关度得分和对应文档id的对象
-        int start = (page - 1) * pageSize;
-        int end = page * pageSize;
-        Integer endNumber = end;
+        int start = (page - 1) * PAGE_SIZE;
+        int end = page * PAGE_SIZE;
+        int endNumber = end;
 
         if (end > totalNumber) {
             endNumber = Math.toIntExact(totalNumber);
@@ -281,7 +274,7 @@ public class Searcher {
 
             String primaryContents = document.get("contents");
             String contents = primaryContents.replace(" ", "");
-            if (contents != null) {
+            if (!contents.isEmpty()) {
                 TokenStream tokenStream2=analyzer.tokenStream("contents", new StringReader(contents));
                 String highlighterFragment = highlighter.getBestFragment(tokenStream2, contents) + "...";
                 result.setHighlighterFragment(highlighterFragment);

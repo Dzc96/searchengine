@@ -40,8 +40,9 @@ public class Indexer {
         //mmseg4j
         Analyzer analyzer = new ComplexAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
-        IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig);
-        return indexWriter;
+//        IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig);
+//        return indexWriter;
+        return new IndexWriter(directory, indexWriterConfig);
     }
 
     //索引文档总数
@@ -53,6 +54,7 @@ public class Indexer {
      *
      * @throws Exception
      */
+    @SuppressWarnings("Duplicates")
     public void index(String dataDirectory, String indexDirectory) throws Exception {
 
         Directory directory = FSDirectory.open(Paths.get(indexDirectory));
