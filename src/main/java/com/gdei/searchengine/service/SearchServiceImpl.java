@@ -1,11 +1,13 @@
 package com.gdei.searchengine.service;
 
 import com.chenlb.mmseg4j.analysis.ComplexAnalyzer;
+import com.chenlb.mmseg4j.analysis.MMSegAnalyzer;
 import com.chenlb.mmseg4j.analysis.SimpleAnalyzer;
 import com.gdei.searchengine.core.Searcher;
 import com.gdei.searchengine.domain.Result;
 import com.gdei.searchengine.domain.ResultIterator;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
@@ -70,10 +72,12 @@ public class SearchServiceImpl implements SearchService {
 
             //创建一个内存索引库
             RAMDirectory indexDir = new RAMDirectory();
-            Analyzer analyzer = new ComplexAnalyzer();
+//            Analyzer analyzer = new ComplexAnalyzer();
+
+            Analyzer analyzer = new MMSegAnalyzer() ; //分词器
 
             //AnalyzingInfixSuggester，关键词联想的核心类
-            suggester = new AnalyzingInfixSuggester(indexDir, analyzer);
+            suggester = new AnalyzingInfixSuggester(indexDir, analyzer, analyzer, 2, false);
 
             //返回所有数据，然后进行查询
             List<Result> results = searchAllFile();
@@ -101,7 +105,7 @@ public class SearchServiceImpl implements SearchService {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            suggester.close();
+            suggester.refresh();
         }
 
 

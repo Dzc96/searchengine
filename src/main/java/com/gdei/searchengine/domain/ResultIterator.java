@@ -73,16 +73,14 @@ public class ResultIterator implements InputIterator {
      */
     public Set<BytesRef> contexts() {
 //        try {
-//            Set<BytesRef> regions = new HashSet<BytesRef>();
-//            for (String region : currentProduct.getRegions()) {
-//                regions.add(new BytesRef(region.getBytes("UTF8")));
-//            }
-//            return regions;
+//            Set<BytesRef> fileNames = new HashSet<BytesRef>();
+//
+//            fileNames.add(new BytesRef(currentResult.getFileName().getBytes("UTF8")));
+//            return fileNames;
 //        } catch (UnsupportedEncodingException e) {
 //            throw new RuntimeException("Couldn't convert to UTF-8");
 //        }
-//        return null;
-        return null;
+    return  null;
     }
 
 

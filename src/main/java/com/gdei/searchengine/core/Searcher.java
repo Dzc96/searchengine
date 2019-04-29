@@ -47,7 +47,9 @@ public class Searcher {
 
 
         //根据传进来的参数构建Query对象
-        Query query = parser.parse(parameter);
+//        Query query = parser.parse(parameter);
+        Query query = parser.parse(QueryParser.escape(parameter));
+
 
         long start = System.currentTimeMillis();
         //默认查询十条
