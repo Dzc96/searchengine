@@ -1,6 +1,5 @@
-package com.gdei.searchengine.core;
+package com.gdei.searchengine.domain;
 
-import com.gdei.searchengine.domain.Result;
 import org.apache.lucene.search.suggest.InputIterator;
 import org.apache.lucene.util.BytesRef;
 
@@ -13,28 +12,20 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- * @Description: 这个类是核心，决定了索引是如何创建的，决定了最终返回的提示关键词列表数据及其排序
- * 主要是对文件名建立联想
- */
 public class ResultIterator implements InputIterator {
     private Iterator<Result> resultIterator;
     private Result currentResult;
 
-    ResultIterator(Iterator<Result> resultIterator) {
+    public ResultIterator(Iterator<Result> resultIterator) {
         this.resultIterator = resultIterator;
     }
 
-    /**
-     * 设置是否启用Contexts域
-     * @return
-     */
     public boolean hasContexts() {
-        return true;
+        return false;
     }
 
     /**
-     * 是否有设置payload信息
+     * 是否有设置payload信息,可以不设置？
      */
     public boolean hasPayloads() {
         return true;
@@ -44,15 +35,12 @@ public class ResultIterator implements InputIterator {
         return null;
     }
 
-    /**
-    * next方法的返回值指定的其实就是就是可能返回给我们的suggest的值的结果集合（LookUpResult.key),这里我们选择了商品名。
-    */
     public BytesRef next() {
         if (resultIterator.hasNext()) {
             currentResult = resultIterator.next();
+            String fileName = currentResult.getFileName();
             try {
-                //返回当前Project的name值，把product类的name属性值作为key
-                return new BytesRef(currentResult.getFileName().getBytes("UTF8"));
+                return new BytesRef(fileName.getBytes("UTF8"));
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException("Couldn't convert to UTF-8",e);
             }
@@ -60,6 +48,7 @@ public class ResultIterator implements InputIterator {
             return null;
         }
     }
+
 
     /**
      * 将Result对象序列化存入payload
@@ -83,15 +72,19 @@ public class ResultIterator implements InputIterator {
      * Lucene底层API去做了，但你必须要了解底层干了些什么
      */
     public Set<BytesRef> contexts() {
-        try {
-            Set<BytesRef> contents = new HashSet<BytesRef>();
-
-            contents.add(new BytesRef(currentResult.getHighlighterFragment().getBytes("UTF8")));
-            return contents;
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Couldn't convert to UTF-8");
-        }
+//        try {
+//            Set<BytesRef> regions = new HashSet<BytesRef>();
+//            for (String region : currentProduct.getRegions()) {
+//                regions.add(new BytesRef(region.getBytes("UTF8")));
+//            }
+//            return regions;
+//        } catch (UnsupportedEncodingException e) {
+//            throw new RuntimeException("Couldn't convert to UTF-8");
+//        }
+//        return null;
+        return null;
     }
+
 
     /**
      * 返回权重值，这个值会影响排序
@@ -101,4 +94,6 @@ public class ResultIterator implements InputIterator {
     public long weight() {
         return 1;
     }
+
+
 }

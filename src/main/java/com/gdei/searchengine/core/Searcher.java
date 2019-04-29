@@ -208,7 +208,7 @@ public class Searcher {
         //创建中文分词器,这里分别使用了SmartChineseAnalyzer、mmseg4j的ComplexAnalyzer
         //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
         Analyzer analyzer = new ComplexAnalyzer();
-
+//        Analyzer analyzer = new ComplexAnalyzer("data/*.dic");
         //指定要查询的域
         String[] fields  = {"contents", "fileName"};
         BooleanQuery.Builder builder = new BooleanQuery.Builder();

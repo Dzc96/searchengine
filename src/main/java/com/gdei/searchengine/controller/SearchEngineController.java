@@ -5,20 +5,18 @@ import com.gdei.searchengine.domain.Result;
 import com.gdei.searchengine.service.IndexService;
 import com.gdei.searchengine.service.IndexServiceImpl;
 import com.gdei.searchengine.service.SearchService;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.search.suggest.analyzing.AnalyzingInfixSuggester;
-import org.apache.lucene.store.RAMDirectory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 @Controller
-public class IndexController {
+public class SearchEngineController {
 
     @Autowired
     IndexService indexService;
@@ -71,11 +69,12 @@ public class IndexController {
 
         //讲道理这里是可以优化的。
         //首页只返回五个
-//        ArrayList<Result> results = searchService.pageSearch(IndexServiceImpl.indexDirectory, target,1);
+//        ArrayList<Result> results = searchService.pageSesarch(IndexServiceImpl.indexDirectory, target,1);
         List<Result> results = searchService.booleanSearch(IndexServiceImpl.indexDirectory, target, 1);
         model.addAttribute("results", results);
         Integer totalPage = Allresults.size() / (Searcher.PAGE_SIZE);
         model.addAttribute("totalPage", totalPage);
+
         return "search::table_refresh";
     }
 
@@ -113,48 +112,19 @@ public class IndexController {
     }
 
 
-    @GetMapping("/testSuggest")
-    public void lookup() throws Exception {
-        RAMDirectory indexDir = new RAMDirectory();
-        StandardAnalyzer analyzer = new StandardAnalyzer();
-        AnalyzingInfixSuggester suggester = new AnalyzingInfixSuggester(indexDir, analyzer);
-//        searchService.testSuggest(suggester);
-//        suggester.build
+    @PostMapping("/suggestSearch")
+    @ResponseBody
+    public List<Result> keySuggest(@RequestBody String key) throws Exception {
+        List<Result> suggests = searchService.suggestSearch(key);
+        System.out.println("results的大小：" + suggests.size());
+        Iterator<Result> iterator = suggests.iterator();
+
+        while (iterator.hasNext()) {
+            Result next = iterator.next();
+            System.out.println(next.getFileName());
+        }
+        return suggests;
     }
 
-//    @Test
-//    public void mainTest(){
-//        try {
-//            RAMDirectory indexDir = new RAMDirectory();
-//            StandardAnalyzer analyzer = new StandardAnalyzer();
-//            AnalyzingInfixSuggester suggester = new AnalyzingInfixSuggester(indexDir, analyzer);
-//
-//            //创建Product测试数据
-//            ArrayList<Product> products = new ArrayList<Product>();
-//            products.add(new Product("Electric Guitar",
-//                    "http://images.example/electric-guitar.jpg", new String[] {
-//                    "US", "CA" }, 100));
-//            products.add(new Product("Electric Train",
-//                    "http://images.example/train.jpg", new String[] { "US",
-//                    "CA" }, 100));
-//            products.add(new Product("Acoustic Guitar",
-//                    "http://images.example/acoustic-guitar.jpg", new String[] {
-//                    "US", "ZA" }, 80));
-//            products.add(new Product("Guarana Soda",
-//                    "http://images.example/soda.jpg",
-//                    new String[] { "ZA", "IE" }, 130));
-//
-//            // 创建测试索引
-//            suggester.build(new ProductIterator(products.iterator()));
-//
-//            // 开始搜索
-//            lookup(suggester, "Gu", "US");
-//            //lookup(suggester, "Gu", "ZA");
-//            //lookup(suggester, "Gui", "CA");
-//            //lookup(suggester, "Electric guit", "US");
-//        } catch (IOException e) {
-//            System.err.println("Error!");
-//        }
-//    }
 
 }

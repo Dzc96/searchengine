@@ -12,5 +12,7 @@ public interface SearchService {
 
     List<Result> booleanSearch(String indexDir, String parameter, int page) throws Exception;
 
-    void testSuggest(AnalyzingInfixSuggester suggester, String fileName) throws Exception;
+    List<Result> suggestSearch(String fileName) throws Exception;
+
+    List<Result> searchAllFile() throws Exception;
 }

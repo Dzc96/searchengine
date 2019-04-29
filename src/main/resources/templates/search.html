@@ -67,6 +67,11 @@
                 <button type="button" class="btn btn-info" id="searchbutton" style="background: #3385FF">进行检索</button>
             </div>
         </div>
+        <!-- 关键词联想显示 -->
+        <div id="popup">
+            <ul id="myColors_ul">
+            </ul>
+        </div>
 
 
     </form>
@@ -205,16 +210,64 @@
         //这里应该把关键字拼接到URL上
         $("#searchbutton").click(function () {
             var keyword = $("#parameter").val();
-            // var url = '/pageInfoSearch?parameter=' + keyword;
             var url = '/pageSearch?parameter=' + keyword;
             $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
         })
-
-
-
-
-
     });
+
+
+    $(function(){
+        $("#parameter").keyup(function(){
+            var iVal = $.trim($(this).val());
+            $.ajax({
+                "url":"https://localhost:8080/suggestSearch",
+                "data":{"wd":iVal},
+                "dataType":"jsonp",
+                "jsonp":"cb",
+                "jsonpCallback":"showeeeee",
+            });
+        });
+
+        $(document).on("mouseover","#myColors_ul li",function(){
+            $(this).removeClass("mouseOut");
+            $(this).addClass("mouseOver");
+        });
+        $(document).on("mouseout","#myColors_ul li",function(){
+            $(this).removeClass("mouseOver");
+            $(this).addClass("mouseOut");
+        });
+        $(document).on("click","#myColors_ul li",function(){
+            var bgColor = $(this).text();
+            $("#myColors").val(bgColor);
+            $("#popup").addClass("hide");
+            $("#myColors_ul").html('');
+            $("body").css("background",bgColor);
+        });
+    });
+
+
+
+
+    function showeeeee(result) {
+        var iVal = $.trim($("#parameter").val());
+        var data = result.s;
+        $("#popup").addClass("hide");
+        $("#myColors_ul").html('');
+        var str = '';
+        if (data.length > 0) {
+            $.each(data, function (index, arrVal) {
+                str += "<li>" + arrVal + "</li>";
+                if (iVal != '' && str != '') {
+                    $("#popup").removeClass("hide");
+                    $("#popup").addClass("show");
+                    $("#myColors_ul").html(str);
+                } else {
+                    $("body").css("background", "#fff");
+                }
+            });
+        }
+    }
+
 
 
 </script>
