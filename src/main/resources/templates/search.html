@@ -22,6 +22,36 @@
 </head>
 <style type="text/css">
 
+    #popup {
+        z-index: 1;
+        overflow: hidden;
+        border: #c5dadb 1px solid;
+        border-top: none;
+        cursor: default;
+        display: none;
+    }
+
+
+
+
+    #popup  li:hover {
+        background: #C4D1DE;
+        color: #DC1414;
+    }
+
+    #popup ul,li{
+        margin-top: 5px;
+        /*font-size: large;*/
+        /*line-height: 20px;*/
+        padding-left: 1px;
+        /*font: 14px, '微软雅黑';*/
+    }
+
+    .li class {
+        background: #C4D1DE;
+        color: #DC1414;
+    }
+
 
 </style>
 
@@ -83,7 +113,6 @@
         <div class="col-md-8">
             <!-- Results block 其实应该遍历生成一个一个的DIV-->
             <div id="table_refresh" th:fragment="table_refresh">
-
                 <div th:if="${results} ne null">
                     <div th:each="result : ${results}" style="margin-top: 30px">
                         <!--<a th:href="@{${result.fullPath}}" class="btn-link" th:onclick="runExecutable([[${result.fullPath}]])">-->
@@ -208,12 +237,20 @@
         });
 
 
-        //这里应该把关键字拼接到URL上
+        //把关键字拼接到URL上
         $("#searchbutton").click(function () {
             var keyword = $("#parameter").val();
             var url = '/pageSearch?parameter=' + keyword;
             $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
         })
+
+
+        $().click(function() {
+            $("#popup").empty();
+            $("#popup").css("display", "none");
+        });
+
+
     });
 
 
@@ -225,31 +262,51 @@
                 data:JSON.stringify(key),
                 type: "POST",
                 contentType: "application/json;charset=utf-8",
-                success:  showeeeee
+                success: show
             });
         });
 
-        $(document).on("mouseover","#myColors_ul li",function(){
-            $(this).removeClass("mouseOut");
-            $(this).addClass("mouseOver");
-        });
-        $(document).on("mouseout","#myColors_ul li",function(){
-            $(this).removeClass("mouseOver");
-            $(this).addClass("mouseOut");
-        });
+        // $(document).on("mouseover","#myColors_ul li",function(){
+        //     $(this).removeClass("mouseOut");
+        //     $(this).addClass("mouseOver");
+        // });
+        // $(document).on("mouseout","#myColors_ul li",function(){
+        //     $(this).removeClass("mouseOver");
+        //     $(this).addClass("mouseOut");
+        // });
         $(document).on("click","#myColors_ul li",function(){
+
+
+            var keyword = $(this).text();
+            $("#parameter").val(keyword);
+            var parameter =  $("#parameter").val();
+            var url = '/pageSearch?parameter=' + parameter;
+            $("#table_refresh").load(encodeURI(url)); //encodeURI(url)解决中文乱码问题
+
             var bgColor = $(this).text();
             $("#myColors").val(bgColor);
             $("#popup").addClass("hide");
+            $("#popup").removeClass("show");
             $("#myColors_ul").html('');
             $("body").css("background",bgColor);
         });
+
+
+        // $().click(function() {
+        //     // $('#popup').empty();
+        //     // $('#popup').css("display", "none");
+        //     // $("#popup").removeClass("show");
+        //     $("#popup").addClass("hide");
+        //
+        // });
+
+
     });
 
 
 
 
-    function showeeeee(data) {
+    function show(data) {
         var iVal = $.trim($("#parameter").val());
         // var data = result.valueOf();
         // var data = JSON.stringify(result);
@@ -258,7 +315,7 @@
         var str = '';
         if (data.length > 0) {
             $.each(data, function (index, arrVal) {
-                str += "<li>" + arrVal.fileName + "</li>";
+                str += "<li><a href='#'>" + arrVal.fileName + "</a></li>";
                 if (iVal != '' && str != '') {
                     $("#popup").removeClass("hide");
                     $("#popup").addClass("show");
@@ -269,7 +326,6 @@
             });
         }
     }
-
 
 
 </script>

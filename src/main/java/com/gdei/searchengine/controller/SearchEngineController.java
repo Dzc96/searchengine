@@ -100,7 +100,9 @@ public class SearchEngineController {
             totalNumber = Allresults.size();
         }
 
-        String target = parameter.replaceAll("\"", "");
+
+
+        String target = parameter.replaceAll("\"", "").trim();
 //        ArrayList<Result> results = searchService.pageSearch(IndexServiceImpl.indexDirectory, target, page);
         List<Result> results = searchService.booleanSearch(IndexServiceImpl.indexDirectory, target, page);
 
