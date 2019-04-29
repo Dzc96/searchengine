@@ -122,7 +122,9 @@ public class SearchEngineController {
         while (iterator.hasNext()) {
             Result next = iterator.next();
             System.out.println(next.getFileName());
+            System.out.println(next);
         }
+
         return suggests;
     }
 

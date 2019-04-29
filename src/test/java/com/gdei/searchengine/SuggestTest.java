@@ -18,12 +18,12 @@ public class SuggestTest extends SearchengineApplicationTests{
     public void test1() throws Exception{
         List<Result> results = searchService.suggestSearch("教育");
         System.out.println("results的大小：" + results.size());
-        Iterator<Result> iterator = results.iterator();
-
-        while (iterator.hasNext()) {
-            Result next = iterator.next();
-            System.out.println(next.getFileName());
-        }
+//        Iterator<Result> iterator = results.iterator();
+//
+//        while (iterator.hasNext()) {
+//            Result next = iterator.next();
+//            System.out.println(next.getFileName());
+//        }
     }
 
 

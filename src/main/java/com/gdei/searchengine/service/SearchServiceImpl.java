@@ -89,9 +89,10 @@ public class SearchServiceImpl implements SearchService {
                 Result suggestResult = null;
                 try {
                     suggestResult = (Result) is.readObject();
+//                    suggestResults.add(suggestResult.getFileName());
                     suggestResults.add(suggestResult);
                 } catch (ClassNotFoundException e) {
-                    // TODO Auto-generated catch block
+
                     e.printStackTrace();
                 }
             }

@@ -62,16 +62,17 @@
             <label for="parameter" class="col-sm-2 control-label">检索内容</label>
             <div class="col-sm-6">
                 <input type="text" class="form-control" id="parameter" placeholder="请输入要搜索的内容...">
+                <!-- 关键词联想显示 -->
+                <div id="popup">
+                    <ul id="myColors_ul">
+                    </ul>
+                </div>
             </div>
             <div class="col-sm-2">
                 <button type="button" class="btn btn-info" id="searchbutton" style="background: #3385FF">进行检索</button>
             </div>
         </div>
-        <!-- 关键词联想显示 -->
-        <div id="popup">
-            <ul id="myColors_ul">
-            </ul>
-        </div>
+
 
 
     </form>
@@ -218,13 +219,13 @@
 
     $(function(){
         $("#parameter").keyup(function(){
-            var iVal = $.trim($(this).val());
+            var key = $.trim($(this).val());
             $.ajax({
-                "url":"https://localhost:8080/suggestSearch",
-                "data":{"wd":iVal},
-                "dataType":"jsonp",
-                "jsonp":"cb",
-                "jsonpCallback":"showeeeee",
+                url:"http://localhost:8080/suggestSearch",
+                data:JSON.stringify(key),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                success:  showeeeee
             });
         });
 
@@ -248,15 +249,16 @@
 
 
 
-    function showeeeee(result) {
+    function showeeeee(data) {
         var iVal = $.trim($("#parameter").val());
-        var data = result.s;
+        // var data = result.valueOf();
+        // var data = JSON.stringify(result);
         $("#popup").addClass("hide");
         $("#myColors_ul").html('');
         var str = '';
         if (data.length > 0) {
             $.each(data, function (index, arrVal) {
-                str += "<li>" + arrVal + "</li>";
+                str += "<li>" + arrVal.fileName + "</li>";
                 if (iVal != '' && str != '') {
                     $("#popup").removeClass("hide");
                     $("#popup").addClass("show");
