@@ -34,14 +34,11 @@ import java.nio.file.Paths;
 @Component
 public class Indexer {
 
+    //根据索引库对应的Directory对象和mmseg4j中文分词器，获得IndexWriter对象
     public IndexWriter getWriter(Directory directory) throws Exception {
-        //使用中文分词器
-       //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
         //mmseg4j
         Analyzer analyzer = new ComplexAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
-//        IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig);
-//        return indexWriter;
         return new IndexWriter(directory, indexWriterConfig);
     }
 

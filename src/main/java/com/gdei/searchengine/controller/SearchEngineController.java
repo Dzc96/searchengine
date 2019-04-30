@@ -67,9 +67,7 @@ public class SearchEngineController {
         String target = parameter.replaceAll("\"", "");
         List<Result> Allresults = searchService.search(IndexServiceImpl.indexDirectory, target);
 
-        //讲道理这里是可以优化的。
-        //首页只返回五个
-//        ArrayList<Result> results = searchService.pageSesarch(IndexServiceImpl.indexDirectory, target,1);
+
         List<Result> results = searchService.booleanSearch(IndexServiceImpl.indexDirectory, target, 1);
         model.addAttribute("results", results);
         Integer totalPage = Allresults.size() / (Searcher.PAGE_SIZE);

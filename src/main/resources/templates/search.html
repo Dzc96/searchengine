@@ -107,7 +107,6 @@
 
     </form>
 
-    <!--font-weight:bold;-->
     <div class="row">
         <div class="col-md-1"></div>
         <div class="col-md-8">
@@ -115,7 +114,6 @@
             <div id="table_refresh" th:fragment="table_refresh">
                 <div th:if="${results} ne null">
                     <div th:each="result : ${results}" style="margin-top: 30px">
-                        <!--<a th:href="@{${result.fullPath}}" class="btn-link" th:onclick="runExecutable([[${result.fullPath}]])">-->
                         <a th:href="@{'#'}" class="btn-link" th:onclick="runExecutable([[${result.fullPath}]])">
                             <div th:utext="${result.fileName}" style="font-size: 16px;color: #0000CC"></div>
                         </a>
@@ -144,15 +142,6 @@
         </div>
         <div class="col-md-3"></div>
     </div>
-
-
-
-
-    <!--<a href="#" class="btn-link" >1</a>-->
-    <!--<a href="file:///C:/a.txt" class="btn-link">2</a>-->
-    <!--<a href="file:///C:/a.txt" class="btn-link">3</a>-->
-
-
 
 
 </div>
@@ -266,17 +255,8 @@
             });
         });
 
-        // $(document).on("mouseover","#myColors_ul li",function(){
-        //     $(this).removeClass("mouseOut");
-        //     $(this).addClass("mouseOver");
-        // });
-        // $(document).on("mouseout","#myColors_ul li",function(){
-        //     $(this).removeClass("mouseOver");
-        //     $(this).addClass("mouseOut");
-        // });
+
         $(document).on("click","#myColors_ul li",function(){
-
-
             var keyword = $(this).text();
             $("#parameter").val(keyword);
             var parameter =  $("#parameter").val();
@@ -290,29 +270,12 @@
             $("#myColors_ul").html('');
             $("body").css("background",bgColor);
         });
-
-
-        // $().click(function() {
-        //     // $('#popup').empty();
-        //     // $('#popup').css("display", "none");
-        //     // $("#popup").removeClass("show");
-        //     $("#popup").addClass("hide");
-        //
-        // });
-
-<<<<<<< HEAD
-=======
-
->>>>>>> b4b941438859c5563b45084d27c262567373610c
     });
-
 
 
 
     function show(data) {
         var iVal = $.trim($("#parameter").val());
-        // var data = result.valueOf();
-        // var data = JSON.stringify(result);
         $("#popup").addClass("hide");
         $("#myColors_ul").html('');
         var str = '';
