@@ -8,11 +8,10 @@ import java.util.List;
 public interface SearchService {
     List<Result> search(String indexDir, String parameter) throws Exception;
 
-    List<Result> pageSearch(String indexDir, String parameter, int page) throws Exception;
+//    List<Result> pageSearch(String indexDir, String parameter, int page) throws Exception;
 
     List<Result> booleanSearch(String indexDir, String parameter, int page) throws Exception;
 
     List<Result> suggestSearch(String fileName) throws Exception;
 
-    List<Result> searchAllFile() throws Exception;
 }

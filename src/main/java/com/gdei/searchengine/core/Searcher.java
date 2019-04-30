@@ -1,7 +1,10 @@
 package com.gdei.searchengine.core;
 
 import com.chenlb.mmseg4j.analysis.ComplexAnalyzer;
+import com.chenlb.mmseg4j.analysis.MMSegAnalyzer;
 import com.gdei.searchengine.domain.Result;
+import com.gdei.searchengine.domain.ResultIterator;
+import com.gdei.searchengine.service.IndexServiceImpl;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -10,10 +13,18 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.*;
+import org.apache.lucene.search.suggest.Lookup;
+import org.apache.lucene.search.suggest.analyzing.AnalyzingInfixSuggester;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.springframework.stereotype.Component;
 import org.apache.lucene.search.BooleanQuery;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.StringReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -121,78 +132,78 @@ public class Searcher {
         return results;
     }
 
-    @SuppressWarnings("Duplicates")
-    public List<Result> pageSearch(String indexDir, String parameter, int page) throws Exception {
-        //把索引库加载到内存中，对应Directory对象
-        Directory directory = FSDirectory.open(Paths.get(indexDir));
-
-        //IndexReader对象来读取内存中的索引库，即Directory对象
-        IndexReader indexReader = DirectoryReader.open(directory);
-
-        //创建索引查询器
-        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-
-        //创建中文分词器,这里分别使用了SmartChineseAnalyzer、mmseg4j的ComplexAnalyzer
-        //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
-        Analyzer analyzer = new ComplexAnalyzer();
-
-       //建立查询解析器，先分词再查询,默认先根据Document的contents域查询
-        QueryParser parser = new QueryParser("contents", analyzer);
-
-
-
-        //根据传进来的参数构建Query对象
-        Query query = parser.parse(parameter);
-
-        //topDocs就是查询到的记录
-        TopDocs topDocs = indexSearcher.search(query, page * PAGE_SIZE);
-        //命中的Document总数
-        long totalNumber = topDocs.totalHits;
-
-        /*高亮显示开始*/
-        //算分
-        QueryScorer scorer = new QueryScorer(query);
-        //显示得分高的片段
-        Fragmenter fragmenter = new SimpleSpanFragmenter(scorer);
-        //设置标签内部关键字的颜色
-        //第一个参数：标签的前半部分；第二个参数：标签的后半部分。
-        SimpleHTMLFormatter simpleHTMLFormatter=new SimpleHTMLFormatter("<b><font color='red'>","</font></b>");
-
-        //第一个参数是对查到的结果进行实例化；第二个是片段得分（显示得分高的片段，即摘要）
-        Highlighter highlighter=new Highlighter(simpleHTMLFormatter, scorer);
-
-        //设置片段
-        highlighter.setTextFragmenter(fragmenter);
-        /*高亮显示结束*/
-
-        //ScoreDoc，描述文档相关度得分和对应文档id的对象
-        int start = (page - 1) * PAGE_SIZE;
-        int end = page * PAGE_SIZE;
-        Integer endNumber = end;
-
-        if (end > totalNumber) {
-            endNumber = Math.toIntExact(totalNumber);
-        }
-
-        ScoreDoc[] scoreDocs = topDocs.scoreDocs;
-        ArrayList<Result> results = new ArrayList<Result>();
-        for (int i = start; i < endNumber; i++) {
-            Document document = indexSearcher.doc(scoreDocs[i].doc);
-            String fileName = document.get("fileName");
-            String fullPath = document.get("fullPath");
-
-            String primaryContents = document.get("contents");
-            String contents = primaryContents.replace(" ", "");
-            if (!contents.isEmpty()) {
-                TokenStream tokenStream=analyzer.tokenStream("contents", new StringReader(contents));
-                String highlighterFragment = highlighter.getBestFragment(tokenStream, contents) + "...";
-                Result result = new Result(fileName, highlighterFragment, fullPath);
-                results.add(result);
-            }
-        }
-        indexReader.close();
-        return results;
-    }
+//    @SuppressWarnings("Duplicates")
+//    public List<Result> pageSearch(String indexDir, String parameter, int page) throws Exception {
+//        //把索引库加载到内存中，对应Directory对象
+//        Directory directory = FSDirectory.open(Paths.get(indexDir));
+//
+//        //IndexReader对象来读取内存中的索引库，即Directory对象
+//        IndexReader indexReader = DirectoryReader.open(directory);
+//
+//        //创建索引查询器
+//        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+//
+//        //创建中文分词器,这里分别使用了SmartChineseAnalyzer、mmseg4j的ComplexAnalyzer
+//        //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
+//        Analyzer analyzer = new ComplexAnalyzer();
+//
+//       //建立查询解析器，先分词再查询,默认先根据Document的contents域查询
+//        QueryParser parser = new QueryParser("contents", analyzer);
+//
+//
+//
+//        //根据传进来的参数构建Query对象
+//        Query query = parser.parse(parameter);
+//
+//        //topDocs就是查询到的记录
+//        TopDocs topDocs = indexSearcher.search(query, page * PAGE_SIZE);
+//        //命中的Document总数
+//        long totalNumber = topDocs.totalHits;
+//
+//        /*高亮显示开始*/
+//        //算分
+//        QueryScorer scorer = new QueryScorer(query);
+//        //显示得分高的片段
+//        Fragmenter fragmenter = new SimpleSpanFragmenter(scorer);
+//        //设置标签内部关键字的颜色
+//        //第一个参数：标签的前半部分；第二个参数：标签的后半部分。
+//        SimpleHTMLFormatter simpleHTMLFormatter=new SimpleHTMLFormatter("<b><font color='red'>","</font></b>");
+//
+//        //第一个参数是对查到的结果进行实例化；第二个是片段得分（显示得分高的片段，即摘要）
+//        Highlighter highlighter=new Highlighter(simpleHTMLFormatter, scorer);
+//
+//        //设置片段
+//        highlighter.setTextFragmenter(fragmenter);
+//        /*高亮显示结束*/
+//
+//        //ScoreDoc，描述文档相关度得分和对应文档id的对象
+//        int start = (page - 1) * PAGE_SIZE;
+//        int end = page * PAGE_SIZE;
+//        Integer endNumber = end;
+//
+//        if (end > totalNumber) {
+//            endNumber = Math.toIntExact(totalNumber);
+//        }
+//
+//        ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+//        ArrayList<Result> results = new ArrayList<Result>();
+//        for (int i = start; i < endNumber; i++) {
+//            Document document = indexSearcher.doc(scoreDocs[i].doc);
+//            String fileName = document.get("fileName");
+//            String fullPath = document.get("fullPath");
+//
+//            String primaryContents = document.get("contents");
+//            String contents = primaryContents.replace(" ", "");
+//            if (!contents.isEmpty()) {
+//                TokenStream tokenStream=analyzer.tokenStream("contents", new StringReader(contents));
+//                String highlighterFragment = highlighter.getBestFragment(tokenStream, contents) + "...";
+//                Result result = new Result(fileName, highlighterFragment, fullPath);
+//                results.add(result);
+//            }
+//        }
+//        indexReader.close();
+//        return results;
+//    }
 
 
     //通过布尔查询实现多域查询，即通过传入的查询参数，对文件名fileName域、文件内容contents域进行
@@ -285,6 +296,101 @@ public class Searcher {
         }
         indexReader.close();
         return results;
+    }
+
+
+    /**
+     * 根据前台传来的关键字计算出搜索热词并返回
+     * @param key
+     * @return
+     * @throws Exception
+     */
+    public List<Result> suggestSearch(String key) throws Exception {
+        AnalyzingInfixSuggester suggester = null;
+        List<Result> suggestResults = null;
+        try {
+            //创建一个内存索引库
+            RAMDirectory indexDir = new RAMDirectory();
+
+            Analyzer analyzer = new MMSegAnalyzer(); //分词器
+
+            //AnalyzingInfixSuggester，关键词联想的核心类
+            suggester = new AnalyzingInfixSuggester(indexDir, analyzer, analyzer, 2, false);
+
+            //返回所有数据，然后进行查询
+            List<Result> results = searchAllFile();
+
+            suggester.build(new ResultIterator(results.iterator()));
+            List<Lookup.LookupResult> lookupResults = suggester.lookup(key, 5, false, false);
+
+            suggestResults = new ArrayList<>();
+            for (Lookup.LookupResult result : lookupResults) {
+                BytesRef bytesRef = result.payload;
+                ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(bytesRef.bytes));
+                Result suggestResult = null;
+                try {
+                    suggestResult = (Result) is.readObject();
+                    suggestResults.add(suggestResult);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return suggestResults;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            suggester.refresh();
+        }
+
+        return suggestResults;
+    }
+
+
+
+    /**
+     * 返回索引库中所有Document对象
+     *
+     * @return
+     */
+    public List<Result> searchAllFile() {
+        Directory directory = null;
+        IndexReader indexReader = null;
+        try {
+            //把索引库加载到内存中，对应Directory对象
+            directory = FSDirectory.open(Paths.get(IndexServiceImpl.indexDirectory));
+
+            //IndexReader对象来读取内存中的索引库，即Directory对象
+            indexReader = DirectoryReader.open(directory);
+
+            //创建中文分词器,这里分别使用了SmartChineseAnalyzer、mmseg4j的ComplexAnalyzer
+            //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
+            Analyzer analyzer = new ComplexAnalyzer();
+
+            //创建索引查询器
+            IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+
+            int count = indexReader.maxDoc();//所有文档数
+            List<Result> results = new ArrayList<>();
+            System.out.println("count总数是：" + count);
+            for (int i = 0; i < count; i++) {
+                Document doc = indexSearcher.doc(i);//根据docID拿到索引库中的Document对象
+                String fileName = doc.get("fileName");
+                //不显示文件名后缀
+                String newfileName = fileName.substring(0, fileName.lastIndexOf("."));
+                Result result = new Result();
+                result.setFileName(newfileName);
+                results.add(result);
+            }
+            indexReader.close();
+            directory.close();
+
+            return results;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 

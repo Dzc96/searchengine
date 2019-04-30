@@ -27,14 +27,14 @@ public class SuggestTest extends SearchengineApplicationTests{
     }
 
 
-    @Test
-    public void test2() throws Exception{
-        List<Result> results = searchService.searchAllFile();
-        System.out.println("document的数量" + results.size());
-        Iterator<Result> iterator = results.iterator();
-        while (iterator.hasNext()) {
-            Result next = iterator.next();
-            System.out.println(next.getFileName());
-        }
-    }
+//    @Test
+//    public void test2() throws Exception{
+//        List<Result> results = searchService.searchAllFile();
+//        System.out.println("document的数量" + results.size());
+//        Iterator<Result> iterator = results.iterator();
+//        while (iterator.hasNext()) {
+//            Result next = iterator.next();
+//            System.out.println(next.getFileName());
+//        }
+//    }
 }
