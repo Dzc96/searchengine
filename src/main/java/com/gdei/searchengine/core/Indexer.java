@@ -5,6 +5,7 @@ import com.chenlb.mmseg4j.analysis.ComplexAnalyzer;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -79,14 +80,14 @@ public class Indexer {
                         WordExtractor wordExtractor = new WordExtractor(in);
                         doc.add(new TextField("fileName", files[i].getName(), Field.Store.YES));
                         doc.add(new TextField("contents", wordExtractor.getText(), Field.Store.YES));
-                        doc.add(new TextField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
+                        doc.add(new StringField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
                         indexWriter.addDocument(doc);
                     } else if (fileType.equals("docx")) {
                         XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(
                                 new XWPFDocument(in));
                         doc.add(new TextField("fileName", files[i].getName(), Field.Store.YES));
                         doc.add(new TextField("contents", xwpfWordExtractor.getText(), Field.Store.YES));
-                        doc.add(new TextField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
+                        doc.add(new StringField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
                         xwpfWordExtractor.close();
                         indexWriter.addDocument(doc);
                     } else if (fileType.equals("pdf")) {
@@ -96,7 +97,7 @@ public class Indexer {
                         PDFTextStripper stripper = new PDFTextStripper();
                         doc.add(new TextField("fileName", files[i].getName(), Field.Store.YES));
                         doc.add(new TextField("contents", stripper.getText(pdDocument), Field.Store.YES));
-                        doc.add(new TextField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
+                        doc.add(new StringField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
                         indexWriter.addDocument(doc);
                         pdDocument.close();
                     } else if (fileType.equals("txt")) {
@@ -111,7 +112,7 @@ public class Indexer {
                         inputStreamReader.close();
                         doc.add(new TextField("fileName", files[i].getName(), Field.Store.YES));
                         doc.add(new TextField("contents", result.toString(), Field.Store.YES));
-                        doc.add(new TextField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
+                        doc.add(new StringField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
                         indexWriter.addDocument(doc);
                     } else if (fileType.equals("xls")) {
                         InputStream is = null;
@@ -126,7 +127,7 @@ public class Indexer {
                         extractor.close();
                         doc.add(new TextField("fileName", files[i].getName(), Field.Store.YES));
                         doc.add(new TextField("contents", text, Field.Store.YES));
-                        doc.add(new TextField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
+                        doc.add(new StringField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
                         indexWriter.addDocument(doc);
                     } else if (fileType.equals("xlsx")) {
                         InputStream is = null;
@@ -136,11 +137,11 @@ public class Indexer {
                         workBook = new XSSFWorkbook(is);
                         XSSFExcelExtractor extractor = new XSSFExcelExtractor(workBook);
                         text = extractor.getText();
-                        extractor.close();
                         doc.add(new TextField("fileName", files[i].getName(), Field.Store.YES));
                         doc.add(new TextField("contents", text, Field.Store.YES));
-                        doc.add(new TextField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
+                        doc.add(new StringField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
                         indexWriter.addDocument(doc);
+                        extractor.close();
                     } else if (fileType.equals("pptx")) {
                         InputStream is = null;
                         XMLSlideShow slide = null;
@@ -149,6 +150,9 @@ public class Indexer {
                         slide = new XMLSlideShow(is);
                         XSLFPowerPointExtractor extractor = new XSLFPowerPointExtractor(slide);
                         text = extractor.getText();
+                        doc.add(new TextField("fileName", files[i].getName(), Field.Store.YES));
+                        doc.add(new TextField("contents", text, Field.Store.YES));
+                        doc.add(new StringField("fullPath", files[i].getCanonicalPath(), Field.Store.YES));
                         extractor.close();
                     }
                 }

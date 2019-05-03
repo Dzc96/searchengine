@@ -27,12 +27,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StringReader;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 @Component
 public class Searcher {
+
+
+
+
+    //维护一个文件名和文件名对应拼音的映射
+    public static Map<String, String> cn2pinyin = new HashMap<>();
+
 
     //每页的记录数量
     public static final int PAGE_SIZE = 5;
@@ -331,6 +337,7 @@ public class Searcher {
                 try {
                     suggestResult = (Result) is.readObject();
                     suggestResults.add(suggestResult);
+
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -353,7 +360,7 @@ public class Searcher {
      *
      * @return
      */
-    public List<Result> searchAllFile() {
+    public static  List<Result> searchAllFile() {
         Directory directory = null;
         IndexReader indexReader = null;
         try {
@@ -381,7 +388,11 @@ public class Searcher {
                 Result result = new Result();
                 result.setFileName(newfileName);
                 results.add(result);
+                cn2pinyin.put(PinYin.getPinYin(newfileName), newfileName);
             }
+
+
+
             indexReader.close();
             directory.close();
 
@@ -393,6 +404,50 @@ public class Searcher {
         return null;
     }
 
+
+
+    public List<Result> suggestSearchByTrie(String key) throws Exception {
+
+        if (key.isEmpty() || key == null)
+            return null;
+
+
+        //根据文件名构建Trie字典树
+        List<Result> results = searchAllFile();
+
+        Trie trie = new Trie();
+        Iterator<Result> iterator = results.iterator();
+        while (iterator.hasNext()) {
+            Result result = iterator.next();
+            trie.insert(PinYin.getPinYin(result.getFileName()));
+        }
+
+        //preword传过来之后要作处理，有中文就过滤出来转成拼音
+
+
+        System.out.println("----------");
+        System.out.println(trie.root.nexts);
+        System.out.println("----------");
+        //根据前缀模糊查找Trie字典树
+        String preword = PinYin.getPinYin(key);
+        List<String> datas = trie.getData(preword); //datas为null了,我感觉是我的树没构建好
+        if (datas == null) {
+            System.out.println("data为null");
+            System.out.println(trie.list);
+        }
+        Iterator<String> stringIterator = datas.iterator();
+
+        results.clear();
+        while (stringIterator.hasNext()) {
+            String py = stringIterator.next();
+            String fileName = Searcher.cn2pinyin.get(py);
+            Result result = new Result();
+            result.setFileName(fileName);
+            results.add(result);
+        }
+        System.out.println(results);
+        return results;
+    }
 
 
 }

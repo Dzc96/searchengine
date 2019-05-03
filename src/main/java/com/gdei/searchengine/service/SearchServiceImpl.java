@@ -61,6 +61,11 @@ public class SearchServiceImpl implements SearchService {
         return results;
     }
 
+    @Override
+    public List<Result> suggestSearchByTrie(String key) throws Exception {
+        List<Result> results = searcher.suggestSearchByTrie(key);
+        return results;
+    }
 
 
 }

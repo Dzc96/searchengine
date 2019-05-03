@@ -1,6 +1,8 @@
 package com.gdei.searchengine.controller;
 
+import com.gdei.searchengine.core.PinYin;
 import com.gdei.searchengine.core.Searcher;
+import com.gdei.searchengine.core.Trie;
 import com.gdei.searchengine.domain.Result;
 import com.gdei.searchengine.service.IndexService;
 import com.gdei.searchengine.service.IndexServiceImpl;
@@ -18,6 +20,7 @@ import java.util.Map;
 @Controller
 public class SearchEngineController {
 
+
     @Autowired
     IndexService indexService;
 
@@ -26,6 +29,8 @@ public class SearchEngineController {
 
     @Autowired
     Searcher searcher;
+
+    static Trie trie;
 
     @GetMapping("/search")
     public String createQuery() throws Exception {
@@ -112,13 +117,31 @@ public class SearchEngineController {
     }
 
 
+//    @PostMapping("/suggestSearch")
+//    @ResponseBody
+//    public List<Result> keySuggest(@RequestBody String key) throws Exception {
+//        List<Result> suggests = searchService.suggestSearch(key);
+//        System.out.println("results的大小：" + suggests.size());
+//        Iterator<Result> iterator = suggests.iterator();
+//
+//        while (iterator.hasNext()) {
+//            Result next = iterator.next();
+//            System.out.println(next.getFileName());
+//            System.out.println(next);
+//        }
+//
+//        return suggests;
+//    }
+//
+
+
     @PostMapping("/suggestSearch")
     @ResponseBody
     public List<Result> keySuggest(@RequestBody String key) throws Exception {
-        List<Result> suggests = searchService.suggestSearch(key);
+        List<Result> suggests = searchService.suggestSearchByTrie(key);
+
         System.out.println("results的大小：" + suggests.size());
         Iterator<Result> iterator = suggests.iterator();
-
         while (iterator.hasNext()) {
             Result next = iterator.next();
             System.out.println(next.getFileName());
@@ -127,6 +150,5 @@ public class SearchEngineController {
 
         return suggests;
     }
-
 
 }

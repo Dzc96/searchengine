@@ -37,4 +37,16 @@ public class SuggestTest extends SearchengineApplicationTests{
 //            System.out.println(next.getFileName());
 //        }
 //    }
+
+
+
+    @Test
+    public void test3() throws Exception {
+        List<Result> results = searchService.suggestSearchByTrie("广");
+        Iterator<Result> iterator = results.iterator();
+        while (iterator.hasNext()) {
+            Result result = iterator.next();
+            System.out.println(result.getFileName());
+        }
+    }
 }
