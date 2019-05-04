@@ -104,7 +104,6 @@ public class SearchEngineController {
         }
 
 
-
         String target = parameter.replaceAll("\"", "").trim();
 //        ArrayList<Result> results = searchService.pageSearch(IndexServiceImpl.indexDirectory, target, page);
         List<Result> results = searchService.booleanSearch(IndexServiceImpl.indexDirectory, target, page);

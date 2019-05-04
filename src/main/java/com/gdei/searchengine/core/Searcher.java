@@ -5,6 +5,7 @@ import com.chenlb.mmseg4j.analysis.MMSegAnalyzer;
 import com.gdei.searchengine.domain.Result;
 import com.gdei.searchengine.domain.ResultIterator;
 import com.gdei.searchengine.service.IndexServiceImpl;
+import net.sourceforge.pinyin4j.PinyinHelper;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -36,13 +37,16 @@ public class Searcher {
     //维护一个文件名和文件名对应拼音的映射
     public static Map<String, String> cn2pinyin;
     public static List<Result> results;
-
+    //维护一个拼音树
+    public static Trie trie;
+    //维护一个拼音缩写树
+    public static Trie abbrTrie;
     static {
         cn2pinyin =  new HashMap<>();
         results = searchAllFile();
-        System.out.println(results.size());
+        trie = getTrie(results);
+        abbrTrie = getAbbrTrie(results);
     }
-
 
 
     //每页的记录数量
@@ -322,8 +326,8 @@ public class Searcher {
                 result.setFileName(newfileName);
                 results.add(result);
                 cn2pinyin.put(PinYin.getPinYin(newfileName), newfileName);
+                cn2pinyin.put(PinYin.getPinYinHeadChar(newfileName), newfileName);
             }
-
 
 
             indexReader.close();
@@ -340,8 +344,6 @@ public class Searcher {
 
 
     public  List<Result> suggestSearchByTrie(String key) throws Exception {
-
-
         System.out.println("传入的这个key是:" + key);
 
         if (key == null || key.length() == 0 || key.equals("") || key.trim() == "" || key.trim().equals("")) {
@@ -353,50 +355,80 @@ public class Searcher {
         //根据文件名构建Trie字典树
 //        List<Result> results = searchAllFile();
         List<Result> results = Searcher.results;
-        Trie trie = getTrie(results);
-
+//        trie = getTrie(results);
+//        abbrTrie = getAbbrTrie(results);
         //preword传过来之后要作处理，有中文就过滤出来转成拼音
-        //根据前缀模糊查找Trie字典树
+        //根据前缀模糊查找Trie字典树，先查找拼音缩写树，有就直接返回，没有就继续查拼音树
+        String headerWord = PinYin.getPinYinHeadChar(key);
+        List<String> datas = abbrTrie.getData(headerWord);
+        if (datas != null) { //说明拼音缩写树中有数据
+            //保存中文结果
+            List<Result> cnResults = new ArrayList<>();
+            Iterator<String> stringIterator = datas.iterator();
+            while (stringIterator.hasNext()) {
+                String py = stringIterator.next();
+                String fileName = Searcher.cn2pinyin.get(py);
+                Result result = new Result();
+                result.setFileName(fileName);
+                cnResults.add(result);
+            }
+            System.out.println(cnResults);
+            return cnResults;
 
+        } else { //查找拼音树
+            String preword = PinYin.getPinYin(key);
+            datas = trie.getData(preword); //datas为null了,我感觉是我的树没构建好
+            if (datas == null) {
+                System.out.println("datas为null，根据前缀查询没有数据");
+                System.out.println("本次搜索的关键字是:" + key);
+                return null;
+            }
+            Iterator<String> stringIterator = datas.iterator();
 
-        String preword = PinYin.getPinYin(key);
-        List<String> datas = trie.getData(preword); //datas为null了,我感觉是我的树没构建好
-        if (datas == null) {
-            System.out.println("datas为null，根据前缀查询没有数据");
-            System.out.println("本次搜索的关键字是:" + key);
-            return null;
+            //保存中文结果，这个地方建议提取成一个方法
+            List<Result> cnResults = new ArrayList<>();
+            while (stringIterator.hasNext()) {
+                String py = stringIterator.next();
+                String fileName = Searcher.cn2pinyin.get(py);
+                Result result = new Result();
+                result.setFileName(fileName);
+                cnResults.add(result);
+            }
+            System.out.println(cnResults);
+            return cnResults;
         }
-        Iterator<String> stringIterator = datas.iterator();
 
-
-        //保存中文结果
-        List<Result> cnResults = new ArrayList<>();
-        while (stringIterator.hasNext()) {
-            String py = stringIterator.next();
-            String fileName = Searcher.cn2pinyin.get(py);
-            Result result = new Result();
-            result.setFileName(fileName);
-            cnResults.add(result);
-        }
-        System.out.println(cnResults);
-        return cnResults;
     }
 
 
-
-    public  Trie getTrie(List<Result> results) {
+    //构建基于拼音的字典树
+    public static Trie getTrie(List<Result> results) {
         Trie trie = new Trie();
-        int count = 0;
+
         Iterator<Result> iterator = results.iterator();
         while (iterator.hasNext()) {
             Result result = iterator.next();
             trie.insert(PinYin.getPinYin(result.getFileName()));
-//            System.out.println(result.getFileName());
-            count++;
         }
-//        System.out.println("Trie构建完毕:"  + trie.root);
-        System.out.println("trie的节点个数:" + count);
         return trie;
     }
+
+    //构建基于拼音缩写的字典树
+    public static Trie getAbbrTrie(List<Result> results) {
+        Trie trie = new Trie();
+
+        Iterator<Result> iterator = results.iterator();
+        while (iterator.hasNext()) {
+            Result result = iterator.next();
+            trie.insert(PinYin.getPinYinHeadChar(result.getFileName()));
+        }
+        return trie;
+    }
+
+
+
+
+
+
 
 }
