@@ -46,6 +46,7 @@ public class Searcher {
         results = searchAllFile();
         trie = getTrie(results);
         abbrTrie = getAbbrTrie(results);
+        System.out.println("Searcher的静态代码块执行了！！！");
     }
 
 
@@ -346,17 +347,7 @@ public class Searcher {
     public  List<Result> suggestSearchByTrie(String key) throws Exception {
         System.out.println("传入的这个key是:" + key);
 
-        if (key == null || key.length() == 0 || key.equals("") || key.trim() == "" || key.trim().equals("")) {
-            System.out.println("这个key有问题");
-            return null;
-        }
 
-
-        //根据文件名构建Trie字典树
-//        List<Result> results = searchAllFile();
-        List<Result> results = Searcher.results;
-//        trie = getTrie(results);
-//        abbrTrie = getAbbrTrie(results);
         //preword传过来之后要作处理，有中文就过滤出来转成拼音
         //根据前缀模糊查找Trie字典树，先查找拼音缩写树，有就直接返回，没有就继续查拼音树
         String headerWord = PinYin.getPinYinHeadChar(key);

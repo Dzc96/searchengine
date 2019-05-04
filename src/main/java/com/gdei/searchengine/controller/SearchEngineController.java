@@ -66,20 +66,20 @@ public class SearchEngineController {
      * @throws Exception
      */
     //RequestMapping(value = "/searchFor", method = RequestMethod.POST)
-    @PostMapping("/searchFor")
-    public String createQuery(String parameter, Model model) throws Exception {
-        //对传入参数做简单处理
-        String target = parameter.replaceAll("\"", "");
-        List<Result> Allresults = searchService.search(IndexServiceImpl.indexDirectory, target);
-
-
-        List<Result> results = searchService.booleanSearch(IndexServiceImpl.indexDirectory, target, 1);
-        model.addAttribute("results", results);
-        Integer totalPage = Allresults.size() / (Searcher.PAGE_SIZE);
-        model.addAttribute("totalPage", totalPage);
-
-        return "search::table_refresh";
-    }
+//    @PostMapping("/searchFor")
+//    public String createQuery(String parameter, Model model) throws Exception {
+//        //对传入参数做简单处理
+//        String target = parameter.replaceAll("\"", "");
+//        List<Result> Allresults = searchService.search(IndexServiceImpl.indexDirectory, target);
+//
+//
+//        List<Result> results = searchService.booleanSearch(IndexServiceImpl.indexDirectory, target, 1);
+//        model.addAttribute("results", results);
+//        Integer totalPage = Allresults.size() / (Searcher.PAGE_SIZE);
+//        model.addAttribute("totalPage", totalPage);
+//
+//        return "search::table_refresh";
+//    }
 
 
     /**
@@ -94,6 +94,8 @@ public class SearchEngineController {
         //传入第几页，就能计算出，后台要返回第i条-->第j条数据
         //封装好这些数据返回，局部刷新页面即可
 
+        String target = parameter.replaceAll("\"", "").trim();
+
         if (totalPage == null) { //说明第一次查询
             List<Result> Allresults = searchService.search(IndexServiceImpl.indexDirectory, parameter);
             Integer pageNumber = Allresults.size() / (Searcher.PAGE_SIZE);
@@ -101,10 +103,23 @@ public class SearchEngineController {
             page = 1;
             System.out.println("本次查询一共有" + Allresults.size() + "记录");
             totalNumber = Allresults.size();
+
+            //把查询关键字，转为拼音，放入两棵字典树
+            String py = PinYin.getPinYin(target);
+            String pyHeader = PinYin.getPinYinHeadChar(target);
+            Searcher.trie.insert(py);
+            Searcher.abbrTrie.insert(pyHeader);
+            System.out.println("py是：" + py);
+            System.out.println("搜索关键字是：" + target);
+            Searcher.cn2pinyin.put(py, target);//保存拼音和中文的映射，方便返回数据时从拼音转为中文进行显示
+            Searcher.cn2pinyin.put(pyHeader, target);
+            for (String key : Searcher.cn2pinyin.keySet()) {
+                System.out.println(key + ":" + Searcher.cn2pinyin.get(key));
+            }
+
         }
 
 
-        String target = parameter.replaceAll("\"", "").trim();
 //        ArrayList<Result> results = searchService.pageSearch(IndexServiceImpl.indexDirectory, target, page);
         List<Result> results = searchService.booleanSearch(IndexServiceImpl.indexDirectory, target, page);
 
