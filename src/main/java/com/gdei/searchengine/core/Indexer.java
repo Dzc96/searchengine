@@ -30,7 +30,8 @@ import java.io.*;
 import java.nio.file.Paths;
 
 /**
- * demo_04主要是构建基于中文的索引库，同时支持对PDF、Word、Excel等文件进行解析创建索引，并对这些文件进行查询
+ * 主要是构建基于中文的索引库，同时支持对PDF、Word、Excel等文件进行解析创建索引，并对这些文件进行查询
+ * 一般来说，不需要对Document的内容进行存储，但要分词和创建索引
  */
 @Component
 public class Indexer {

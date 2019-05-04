@@ -244,15 +244,43 @@
 
 
     $(function(){
+
+
+
+
+
         $("#parameter").keyup(function(){
+            // var couldRun = true;
+            // if (couldRun) {
+            //     couldRun = false;
+            //     var key = $.trim($(this).val());
+            //     if (key.length > 1)
+            //     alert(key);
+            //     $.ajax({
+            //         url: "http://localhost:8080/suggestSearch",
+            //         data: JSON.stringify(key),
+            //         type: "POST",
+            //         contentType: "application/json;charset=utf-8",
+            //         success: show
+            //     });
+            // }
+            //     setTimeout(function () {
+            //         couldRun = true;
+            //     }, 2000)
+
+
+
             var key = $.trim($(this).val());
-            $.ajax({
-                url:"http://localhost:8080/suggestSearch",
-                data:JSON.stringify(key),
-                type: "POST",
-                contentType: "application/json;charset=utf-8",
-                success: show
-            });
+            if (key.length > 1) {
+                $.ajax({
+                    url:"http://localhost:8080/suggestSearch",
+                    data:JSON.stringify(key),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    success: show
+                });
+            }
+
         });
 
 

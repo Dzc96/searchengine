@@ -42,7 +42,7 @@ public class SuggestTest extends SearchengineApplicationTests{
 
     @Test
     public void test3() throws Exception {
-        List<Result> results = searchService.suggestSearchByTrie("广");
+        List<Result> results = searchService.suggestSearchByTrie("广东");
         Iterator<Result> iterator = results.iterator();
         while (iterator.hasNext()) {
             Result result = iterator.next();

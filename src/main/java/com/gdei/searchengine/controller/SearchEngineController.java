@@ -138,7 +138,11 @@ public class SearchEngineController {
     @PostMapping("/suggestSearch")
     @ResponseBody
     public List<Result> keySuggest(@RequestBody String key) throws Exception {
-        List<Result> suggests = searchService.suggestSearchByTrie(key);
+        String target = key.replaceAll("\"", "");
+        List<Result> suggests = searchService.suggestSearchByTrie(target);
+
+        if (suggests == null)
+            return null;
 
         System.out.println("results的大小：" + suggests.size());
         Iterator<Result> iterator = suggests.iterator();
