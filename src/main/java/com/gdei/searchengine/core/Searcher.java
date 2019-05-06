@@ -3,9 +3,7 @@ package com.gdei.searchengine.core;
 import com.chenlb.mmseg4j.analysis.ComplexAnalyzer;
 import com.chenlb.mmseg4j.analysis.MMSegAnalyzer;
 import com.gdei.searchengine.domain.Result;
-import com.gdei.searchengine.domain.ResultIterator;
 import com.gdei.searchengine.service.IndexServiceImpl;
-import net.sourceforge.pinyin4j.PinyinHelper;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -249,47 +247,47 @@ public class Searcher {
      * @return
      * @throws Exception
      */
-    public List<Result> suggestSearch(String key) throws Exception {
-        AnalyzingInfixSuggester suggester = null;
-        List<Result> suggestResults = null;
-        try {
-            //创建一个内存索引库
-            RAMDirectory indexDir = new RAMDirectory();
-
-            Analyzer analyzer = new MMSegAnalyzer(); //分词器
-
-            //AnalyzingInfixSuggester，关键词联想的核心类
-            suggester = new AnalyzingInfixSuggester(indexDir, analyzer, analyzer, 2, false);
-
-            //返回所有数据，然后进行查询
-            List<Result> results = searchAllFile();
-
-            suggester.build(new ResultIterator(results.iterator()));
-            List<Lookup.LookupResult> lookupResults = suggester.lookup(key, 5, false, false);
-
-            suggestResults = new ArrayList<>();
-            for (Lookup.LookupResult result : lookupResults) {
-                BytesRef bytesRef = result.payload;
-                ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(bytesRef.bytes));
-                Result suggestResult = null;
-                try {
-                    suggestResult = (Result) is.readObject();
-                    suggestResults.add(suggestResult);
-
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return suggestResults;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            suggester.refresh();
-        }
-
-        return suggestResults;
-    }
+//    public List<Result> suggestSearch(String key) throws Exception {
+//        AnalyzingInfixSuggester suggester = null;
+//        List<Result> suggestResults = null;
+//        try {
+//            //创建一个内存索引库
+//            RAMDirectory indexDir = new RAMDirectory();
+//
+//            Analyzer analyzer = new MMSegAnalyzer(); //分词器
+//
+//            //AnalyzingInfixSuggester，关键词联想的核心类
+//            suggester = new AnalyzingInfixSuggester(indexDir, analyzer, analyzer, 2, false);
+//
+//            //返回所有数据，然后进行查询
+//            List<Result> results = searchAllFile();
+//
+//            suggester.build(new ResultIterator(results.iterator()));
+//            List<Lookup.LookupResult> lookupResults = suggester.lookup(key, 5, false, false);
+//
+//            suggestResults = new ArrayList<>();
+//            for (Lookup.LookupResult result : lookupResults) {
+//                BytesRef bytesRef = result.payload;
+//                ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(bytesRef.bytes));
+//                Result suggestResult = null;
+//                try {
+//                    suggestResult = (Result) is.readObject();
+//                    suggestResults.add(suggestResult);
+//
+//                } catch (ClassNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            return suggestResults;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            suggester.refresh();
+//        }
+//
+//        return suggestResults;
+//    }
 
 
 

@@ -12,7 +12,7 @@ public interface SearchService {
 
     List<Result> booleanSearch(String indexDir, String parameter, int page) throws Exception;
 
-    List<Result> suggestSearch(String key) throws Exception;
+//    List<Result> suggestSearch(String key) throws Exception;
 
     List<Result> suggestSearchByTrie(String key) throws Exception;
 

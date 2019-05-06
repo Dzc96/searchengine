@@ -1,28 +1,9 @@
 package com.gdei.searchengine.service;
 
-import com.chenlb.mmseg4j.analysis.ComplexAnalyzer;
-import com.chenlb.mmseg4j.analysis.MMSegAnalyzer;
 import com.gdei.searchengine.core.Searcher;
 import com.gdei.searchengine.domain.Result;
-import com.gdei.searchengine.domain.ResultIterator;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.suggest.Lookup;
-import org.apache.lucene.search.suggest.analyzing.AnalyzingInfixSuggester;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.BytesRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.apache.lucene.document.Document;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 
 import java.util.List;
 
@@ -55,11 +36,11 @@ public class SearchServiceImpl implements SearchService {
         return results;
     }
 
-    @Override
-    public List<Result> suggestSearch(String key) throws Exception {
-        List<Result> results = searcher.suggestSearch(key);
-        return results;
-    }
+//    @Override
+//    public List<Result> suggestSearch(String key) throws Exception {
+//        List<Result> results = searcher.suggestSearch(key);
+//        return results;
+//    }
 
     @Override
     public List<Result> suggestSearchByTrie(String key) throws Exception {

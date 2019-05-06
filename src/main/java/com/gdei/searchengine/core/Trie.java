@@ -30,7 +30,6 @@ public class Trie {
         node.end = 1;
     }
 
-
     public boolean startWith(String preWord) {
         Node node = root;
         for (int i = 0; i < preWord.length(); i++) {
