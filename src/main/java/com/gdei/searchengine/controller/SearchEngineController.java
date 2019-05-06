@@ -50,10 +50,13 @@ public class SearchEngineController {
     public Object createIndex(@RequestBody String dataDirectory) throws Exception {
         String target = dataDirectory.replaceAll("\"", "");
         String target1 = target.substring(0, target.length() - 2);
+        long start = System.currentTimeMillis();
         indexService.createIndex(target1);
+        long end = System.currentTimeMillis();
+        System.out.println("创建索引花费了" + (end-start)/1000 + "秒");
         Map<String, Object> map = new HashMap<>();
         map.put("success", true);
-        map.put("message", "索引创建成功！");
+        map.put("message", "索引创建成功，耗时"+ (end-start)/1000 + "秒");
         return map;
     }
 

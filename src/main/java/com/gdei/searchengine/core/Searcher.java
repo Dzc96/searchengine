@@ -40,7 +40,6 @@ public class Searcher {
     //维护一个拼音缩写树
     public static Trie abbrTrie;
 //    static {
-//        cn2pinyin =  new HashMap<>();
 //        results = searchAllFile();
 //        trie = getTrie(results);
 //        abbrTrie = getAbbrTrie(results);
@@ -242,56 +241,6 @@ public class Searcher {
 
 
     /**
-     * 根据前台传来的关键字计算出搜索热词并返回
-     * @param key
-     * @return
-     * @throws Exception
-     */
-//    public List<Result> suggestSearch(String key) throws Exception {
-//        AnalyzingInfixSuggester suggester = null;
-//        List<Result> suggestResults = null;
-//        try {
-//            //创建一个内存索引库
-//            RAMDirectory indexDir = new RAMDirectory();
-//
-//            Analyzer analyzer = new MMSegAnalyzer(); //分词器
-//
-//            //AnalyzingInfixSuggester，关键词联想的核心类
-//            suggester = new AnalyzingInfixSuggester(indexDir, analyzer, analyzer, 2, false);
-//
-//            //返回所有数据，然后进行查询
-//            List<Result> results = searchAllFile();
-//
-//            suggester.build(new ResultIterator(results.iterator()));
-//            List<Lookup.LookupResult> lookupResults = suggester.lookup(key, 5, false, false);
-//
-//            suggestResults = new ArrayList<>();
-//            for (Lookup.LookupResult result : lookupResults) {
-//                BytesRef bytesRef = result.payload;
-//                ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(bytesRef.bytes));
-//                Result suggestResult = null;
-//                try {
-//                    suggestResult = (Result) is.readObject();
-//                    suggestResults.add(suggestResult);
-//
-//                } catch (ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            return suggestResults;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            suggester.refresh();
-//        }
-//
-//        return suggestResults;
-//    }
-
-
-
-    /**
      * 返回索引库中所有Document对象
      *
      * @return
@@ -311,6 +260,8 @@ public class Searcher {
 
             //创建索引查询器
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+
+
 
             int count = indexReader.maxDoc();//所有文档数
             List<Result> results = new ArrayList<>();

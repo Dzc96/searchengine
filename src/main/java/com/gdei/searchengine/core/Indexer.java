@@ -58,14 +58,18 @@ public class Indexer {
 
         Directory directory = FSDirectory.open(Paths.get(indexDirectory));
 
+
         //拿到对应文件夹的所有文件, 用递归处理所有目录
         File[] files = new File(dataDirectory).listFiles();
         for (int i = 0; i < files.length; i++) {
             if (files[i].isDirectory() && !files[i].isHidden()) {
                 index(files[i].getCanonicalFile().toString(), indexDirectory);
             } else if (files[i].getName().indexOf(".") != -1 && !files[i].isHidden()) {
+
+
                 //根据索引库获得操作索引库的IndexWriter
                 IndexWriter indexWriter = getWriter(directory);
+
                 // 获取文件名称
                 String fileName = files[i].getName();
                 // 获取文件后缀名，将其作为文件类型
@@ -160,6 +164,7 @@ public class Indexer {
 
                 indexWriter.close();
             }
+
         }
 
         //对新文档创建索引后，维护用于自动补全的字典树
@@ -167,7 +172,6 @@ public class Indexer {
         Searcher.trie = Searcher.getTrie(Searcher.results);
         Searcher.abbrTrie = Searcher.getAbbrTrie(Searcher.results);
 
-        //for循环结束
     }
 
     public static void main(String[] args) throws Exception {
