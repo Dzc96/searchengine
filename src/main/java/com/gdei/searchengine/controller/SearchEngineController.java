@@ -148,7 +148,12 @@ public class SearchEngineController {
 //    }
 //
 
-
+    /**
+     * 处理页面发送过来的关键字自动补全请求
+     * @param key
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/suggestSearch")
     @ResponseBody
     public List<Result> keySuggest(@RequestBody String key) throws Exception {
@@ -165,7 +170,6 @@ public class SearchEngineController {
             System.out.println(next.getFileName());
             System.out.println(next);
         }
-
         return suggests;
     }
 

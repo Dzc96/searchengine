@@ -157,9 +157,17 @@ public class Indexer {
                         extractor.close();
                     }
                 }
+
                 indexWriter.close();
             }
-        } //for循环结束
+        }
+
+        //对新文档创建索引后，维护用于自动补全的字典树
+        Searcher.results = Searcher.searchAllFile(); //用HashMap在内存中保存拼音和文件名的对应关系
+        Searcher.trie = Searcher.getTrie(Searcher.results);
+        Searcher.abbrTrie = Searcher.getAbbrTrie(Searcher.results);
+
+        //for循环结束
     }
 
     public static void main(String[] args) throws Exception {

@@ -33,19 +33,19 @@ import java.util.*;
 public class Searcher {
 
     //维护一个文件名和文件名对应拼音的映射
-    public static Map<String, String> cn2pinyin;
+    public static Map<String, String> cn2pinyin = new HashMap<>();
     public static List<Result> results;
     //维护一个拼音树
     public static Trie trie;
     //维护一个拼音缩写树
     public static Trie abbrTrie;
-    static {
-        cn2pinyin =  new HashMap<>();
-        results = searchAllFile();
-        trie = getTrie(results);
-        abbrTrie = getAbbrTrie(results);
-        System.out.println("Searcher的静态代码块执行了！！！");
-    }
+//    static {
+//        cn2pinyin =  new HashMap<>();
+//        results = searchAllFile();
+//        trie = getTrie(results);
+//        abbrTrie = getAbbrTrie(results);
+//        System.out.println("Searcher的静态代码块执行了！！！");
+//    }
 
 
     //每页的记录数量
@@ -307,7 +307,6 @@ public class Searcher {
             indexReader = DirectoryReader.open(directory);
 
             //创建中文分词器,这里分别使用了SmartChineseAnalyzer、mmseg4j的ComplexAnalyzer
-            //SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
             Analyzer analyzer = new ComplexAnalyzer();
 
             //创建索引查询器
@@ -324,19 +323,17 @@ public class Searcher {
                 Result result = new Result();
                 result.setFileName(newfileName);
                 results.add(result);
+                //建立拼音和文件名的映射关系，建立拼音缩写和文件名的映射关系
                 cn2pinyin.put(PinYin.getPinYin(newfileName), newfileName);
                 cn2pinyin.put(PinYin.getPinYinHeadChar(newfileName), newfileName);
             }
 
-
             indexReader.close();
             directory.close();
-
             return results;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
