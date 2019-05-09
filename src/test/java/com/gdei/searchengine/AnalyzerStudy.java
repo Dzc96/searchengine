@@ -23,7 +23,8 @@ public class AnalyzerStudy extends SearchengineApplicationTests{
 //需要处理的测试字符串-->选择一个有趣的字符串即可
 //        String str = "这是一个刁志聪的分词器测试程序，希望大家继续关注我的个人系列博客：基于Lucene的案例开发，这里加一点带空格的标签 LUCENE java 分词器";
 //        String str = "广东第二师范学院（Guangdong University of Education）其前身为广东教育学院创建于1955年，2010年3月，经国家教育部批准，改为广东第二师范学院，是广东省属的普通本科学校。2014年，获得本科学位授予权。";
-        String str = "经中国教育部批准，广东教育学院于2010年正式改名为广东第二师范学院，是广东省属普通本科院校。";
+//        String str = "经中国教育部批准，广东教育学院于2010年正式改名为广东第二师范学院，是广东省属普通本科院校。";
+        String str = "本人就读于广东第二师范学院的计算机科学系软件工程专业";
         Analyzer analyzer = null;
         //标准分词器，如果用来处理中文，和ChineseAnalyzer有一样的效果，这也许就是之后的版本弃用ChineseAnalyzer的一个原因
         analyzer = new StandardAnalyzer();
