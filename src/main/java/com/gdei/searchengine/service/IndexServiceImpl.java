@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 @Service
 public class IndexServiceImpl implements IndexService{
 
-    //这里不应该写死，应该弹出一个框让人选择
+   
     public static String indexDirectory = "C:\\Users\\EDZ\\Desktop\\index_directory";
 
     public void createIndex(String dataDirectory) throws Exception{

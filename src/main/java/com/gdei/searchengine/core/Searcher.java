@@ -39,12 +39,6 @@ public class Searcher {
     public static Trie trie;
     //维护一个拼音缩写树
     public static Trie abbrTrie;
-//    static {
-//        results = searchAllFile();
-//        trie = getTrie(results);
-//        abbrTrie = getAbbrTrie(results);
-//        System.out.println("Searcher的静态代码块执行了！！！");
-//    }
 
 
     //每页的记录数量
