@@ -12,7 +12,6 @@ public class SearchServiceImpl implements SearchService {
     @Autowired
     Searcher searcher;
 
-
     /**
      * 应该返回一个查询结果 List<某对象>，还要写一个类封装文件的查询结果
      *
@@ -24,11 +23,6 @@ public class SearchServiceImpl implements SearchService {
         return searcher.search(indexDir, parameter);
     }
 
-//    @Override
-//    public List<Result> pageSearch(String indexDir, String parameter, int page) throws Exception {
-//        List<Result> results = searcher.pageSearch(indexDir, parameter, page);
-//        return results;
-//    }
 
     @Override
     public List<Result> booleanSearch(String indexDir, String parameter, int page) throws Exception {
@@ -36,11 +30,6 @@ public class SearchServiceImpl implements SearchService {
         return results;
     }
 
-//    @Override
-//    public List<Result> suggestSearch(String key) throws Exception {
-//        List<Result> results = searcher.suggestSearch(key);
-//        return results;
-//    }
 
     @Override
     public List<Result> suggestSearchByTrie(String key) throws Exception {

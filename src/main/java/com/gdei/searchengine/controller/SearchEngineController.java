@@ -61,28 +61,6 @@ public class SearchEngineController {
     }
 
 
-    /**
-     * 根据传到后台的关键字进行查询。
-     *
-     * @param parameter
-     * @return
-     * @throws Exception
-     */
-    //RequestMapping(value = "/searchFor", method = RequestMethod.POST)
-//    @PostMapping("/searchFor")
-//    public String createQuery(String parameter, Model model) throws Exception {
-//        //对传入参数做简单处理
-//        String target = parameter.replaceAll("\"", "");
-//        List<Result> Allresults = searchService.search(IndexServiceImpl.indexDirectory, target);
-//
-//
-//        List<Result> results = searchService.booleanSearch(IndexServiceImpl.indexDirectory, target, 1);
-//        model.addAttribute("results", results);
-//        Integer totalPage = Allresults.size() / (Searcher.PAGE_SIZE);
-//        model.addAttribute("totalPage", totalPage);
-//
-//        return "search::table_refresh";
-//    }
 
 
     /**
@@ -134,22 +112,7 @@ public class SearchEngineController {
     }
 
 
-//    @PostMapping("/suggestSearch")
-//    @ResponseBody
-//    public List<Result> keySuggest(@RequestBody String key) throws Exception {
-//        List<Result> suggests = searchService.suggestSearch(key);
-//        System.out.println("results的大小：" + suggests.size());
-//        Iterator<Result> iterator = suggests.iterator();
-//
-//        while (iterator.hasNext()) {
-//            Result next = iterator.next();
-//            System.out.println(next.getFileName());
-//            System.out.println(next);
-//        }
-//
-//        return suggests;
-//    }
-//
+
 
     /**
      * 处理页面发送过来的关键字自动补全请求

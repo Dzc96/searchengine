@@ -13,13 +13,13 @@ public class SuggestTest extends SearchengineApplicationTests{
     SearchService searchService;
 
 
-    @Test
-    public void test1() throws Exception {
-        List<Result> results = searchService.suggestSearchByTrie("广东");
-        Iterator<Result> iterator = results.iterator();
-        while (iterator.hasNext()) {
-            Result result = iterator.next();
-            System.out.println(result.getFileName());
-        }
-    }
+//    @Test
+////    public void test1() throws Exception {
+////        List<Result> results = searchService.suggestSearchByTrie("广东");
+////        Iterator<Result> iterator = results.iterator();
+////        while (iterator.hasNext()) {
+////            Result result = iterator.next();
+////            System.out.println(result.getFileName());
+////        }
+////    }
 }
